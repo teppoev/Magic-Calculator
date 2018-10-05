@@ -1,4 +1,4 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
 public class Function {
     private String code; //or file instead String

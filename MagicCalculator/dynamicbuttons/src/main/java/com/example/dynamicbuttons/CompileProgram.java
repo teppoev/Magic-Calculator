@@ -33,7 +33,7 @@ public class CompileProgram implements IFunction{
 
         @Override
         public IExpression Next() {
-
+            return null;
         }
     };
 

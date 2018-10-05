@@ -1,4 +1,4 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
 public interface Token {
     public int getType();

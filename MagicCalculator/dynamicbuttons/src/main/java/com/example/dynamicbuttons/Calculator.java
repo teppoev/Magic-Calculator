@@ -1,4 +1,4 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
 import java.io.IOException;
 import java.util.ArrayList;
