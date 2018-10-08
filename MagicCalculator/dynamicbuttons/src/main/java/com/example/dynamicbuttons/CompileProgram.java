@@ -6,16 +6,26 @@ public class CompileProgram implements IFunction{
 
     private Calculator calculator;
     private String program;
-    private Map<String, IFunction> functions;
-    private Map<String, Variable> variables;
+    private Map<String, IFunction> funcMap;
+    private Map<String, Variable> varMap;
 
     private int paramsNum;
 
-    public CompileProgram(String _prog, Calculator _calc, Map<String, IFunction> _func)
+    public CompileProgram
+            (String _prog,
+             Calculator _calc,
+             Map<String, IFunction> _func,
+             int _paramsNum)
     {
         calculator = _calc;
         program = _prog;
-        functions = _func;
+        funcMap = _func;
+        paramsNum = _paramsNum;
+
+        for(int i = 0; i < paramsNum; ++i) {
+            varMap.put("input" + Integer.toString(i + 1), new Variable(0.0));
+        }
+
         Compile();
     }
 

@@ -1,12 +1,10 @@
 package com.example.dynamicbuttons;
-
-import android.support.constraint.solver.widgets.ConstraintHorizontalLayout;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentManager;
+
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
@@ -102,9 +100,7 @@ public class TestDynamicButtons extends AppCompatActivity
             public void onClick(View v) {
                 String name;
                 CreateButtonWindow window = new CreateButtonWindow();
-                window.show(
-                        getSupportFragmentManager(), "enterbuttonname"
-                );
+                window.show(getFragmentManager(), "enterbuttonname");
             }
         };
         magicButton.setOnClickListener(clickHandler);
