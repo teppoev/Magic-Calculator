@@ -4,7 +4,9 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.Queue;
 
 public class UserProgram implements IFunction{
 
@@ -14,6 +16,9 @@ public class UserProgram implements IFunction{
 
     private Calculator calculator;
     private Map<String, IFunction> functions;
+
+    private Queue<IAction> actionsQueue;
+
 
     enum TokenType {
 
@@ -58,19 +63,20 @@ public class UserProgram implements IFunction{
     private interface IAction {
         void Do();
         void AddAction(IAction action);
-        BodyAction GetParent();
+        IAction GetParent();
+        Map<String, Variable> GetLocalVariables();
     }
 
     private abstract class Action implements IAction {
 
-        protected BodyAction parent;
+        protected IAction parent;
 
         @Override
-        public BodyAction GetParent() {
+        public IAction GetParent() {
             return parent;
         }
 
-        public void setParent(BodyAction parent) {
+        public void setParent(IAction parent) {
             this.parent = parent;
         }
     }
@@ -79,7 +85,7 @@ public class UserProgram implements IFunction{
         private List<IAction> actions;
         private Map<String, Variable> variables;
 
-        BodyAction(BodyAction _parent) {
+        BodyAction(IAction _parent) {
             parent = _parent;
             variables = parent.GetLocalVariables();
         }
@@ -97,10 +103,9 @@ public class UserProgram implements IFunction{
         }
 
         public void AddVariable(String name, Variable _var) {
-            if(!variables.containsKey(name)) {
+            if (!variables.containsKey(name)) {
                 variables.put(name, _var);
-            }
-            else {
+            } else {
                 throw new Error("The variable with the same name also exists: " + name);
             }
         }
@@ -109,7 +114,8 @@ public class UserProgram implements IFunction{
             variables = parent.GetLocalVariables();
         }
 
-        Map<String, Variable> GetLocalVariables() {
+        @Override
+        public Map<String, Variable> GetLocalVariables() {
             return variables;
         }
     }
@@ -124,7 +130,7 @@ public class UserProgram implements IFunction{
         private Variable left;
         private Variable right;
 
-        ForAction(String _itName, Variable _left, Variable _right, BodyAction _parent) {
+        ForAction(String _itName, Variable _left, Variable _right, IAction _parent) {
             super.setParent(_parent);
 
             left = _left;
@@ -155,6 +161,11 @@ public class UserProgram implements IFunction{
         public void AddAction(IAction action) {
             body.AddAction(action);
         }
+
+        @Override
+        public Map<String, Variable> GetLocalVariables() {
+            return parent.GetLocalVariables();
+        }
     }
 
     private class IfAction extends Action {
@@ -167,7 +178,7 @@ public class UserProgram implements IFunction{
         private Variable right;
         private IFunction cmp;
 
-        IfAction(Variable _left, Variable _right, IFunction _cmp, BodyAction _parent) {
+        IfAction(Variable _left, Variable _right, IFunction _cmp, IAction _parent) {
             super.setParent(_parent);
 
             left = _left;
@@ -204,6 +215,11 @@ public class UserProgram implements IFunction{
             }
         }
 
+        @Override
+        public Map<String, Variable> GetLocalVariables() {
+            return parent.GetLocalVariables();
+        }
+
         public void EndOfIfBody() {
             IsIfBodyEnds = false;
         }
@@ -220,12 +236,17 @@ public class UserProgram implements IFunction{
         @Override
         public void Do() {
             Variable newVar = new Variable(0.0);
-            parent.AddVariable(name, newVar);
+            ((BodyAction)parent).AddVariable(name, newVar);
         }
 
         @Override
         public void AddAction(IAction action) {
             parent.AddAction(action);
+        }
+
+        @Override
+        public Map<String, Variable> GetLocalVariables() {
+            return parent.GetLocalVariables();
         }
     }
 
@@ -249,6 +270,11 @@ public class UserProgram implements IFunction{
         @Override
         public void AddAction(IAction action) {
             parent.AddAction(action);
+        }
+
+        @Override
+        public Map<String, Variable> GetLocalVariables() {
+            return parent.GetLocalVariables();
         }
     }
 
@@ -305,15 +331,119 @@ public class UserProgram implements IFunction{
         return tokenList;
     }
 
-    private void CompileTokenLine(List<Token> line, int level) {
+    enum State {
+        newLine,
+        readFor,
+        readIf,
+        readVar,
+        readNew
+    }
 
-        IFunction Sin = new IFunction() {
-            @Override
-            public double Calculate(double[] params) {
-                return Math.sin(params[0]);
+    private void CompileTokenLine(List<Token> line, int level)
+    {
+        State state = State.newLine;
+        ListIterator<Token> iter = line.listIterator();
+        while(iter.hasNext()) {
+            switch(iter.next().GetType()) {
+                case ForToken: {
+                    if(state != State.newLine) {
+                        throw new Error("Wrong tokens sequence: \"for\" is not on line beginning");
+                    }
+                    state = State.readFor;
+
+                    if(!iter.hasNext()) {
+                        throw new Error("Wrong token sequence: Unexpected end of line");
+                    }
+
+                    Token current = iter.next();
+
+                    if(current.GetType() != TokenType.VarToken) {
+                        throw new Error("Wrong tokens sequence: there wasn't variable after \"for\"");
+                    }
+
+                    String varName = current.GetWord();
+                    Variable left;
+                    Variable right;
+                    Map<String, Variable> variables = actionsQueue.peek().GetLocalVariables();
+
+                    if(!iter.hasNext()) {
+                        throw new Error("Wrong token sequence: Unexpected end of line");
+                    }
+
+                    current = iter.next();
+
+                    if(current.GetType() != TokenType.InToken) {
+                        throw new Error("Wrong tokens sequence: there wasn't variable after \"for\"");
+                    }
+
+                    if(!iter.hasNext()) {
+                        throw new Error("Wrong token sequence: Unexpected end of line");
+                    }
+
+                    current = iter.next();
+
+                    if(current.GetType() != TokenType.VarToken ||
+                            current.GetType() != TokenType.NumToken) {
+                        throw new Error("Wrong tokens sequence: there wasn't range after \"in\"");
+                    }
+
+
+                    if(current.GetType() == TokenType.VarToken) {
+                        String leftVarName = current.GetWord();
+                        if(variables.containsKey(leftVarName)) {
+                            left = variables.get(leftVarName);
+                        }
+                        else {
+                            throw new Error("Unknown variable");
+                        }
+                    }
+                    else {
+                        double value = Double.parseDouble(current.GetWord());
+                        left = new Variable(value);
+                    }
+
+
+                    if(!iter.hasNext()) {
+                        throw new Error("Wrong token sequence: Unexpected end of line");
+                    }
+
+                    if(iter.next().GetType() != TokenType.RangeToken) {
+                        throw new Error("Wrong tokens sequence: expected ... after left border of range");
+                    }
+
+                    if(!iter.hasNext()) {
+                        throw new Error("Wrong token sequence: Unexpected end of line");
+                    }
+
+                    current = iter.next();
+
+                    if(current.GetType() != TokenType.VarToken ||
+                            current.GetType() != TokenType.NumToken) {
+                        throw new Error("Wrong tokens sequence: there wasn't range after \"in\"");
+                    }
+
+                    if(current.GetType() == TokenType.VarToken) {
+                        String rightVarName = current.GetWord();
+                        if(variables.containsKey(rightVarName)) {
+                            right = variables.get(rightVarName);
+                        }
+                        else {
+                            throw new Error("Unknown variable");
+                        }
+                    }
+                    else {
+                        double value = Double.parseDouble(current.GetWord());
+                        right = new Variable(value);
+                    }
+
+                    IAction upperAction = actionsQueue.peek();
+                    actionsQueue.add(new ForAction(varName, left, right, upperAction);
+
+                    line.iterator();
+                    break;
+                }
             }
-        };
-
+        }
     }
 
     @Override
