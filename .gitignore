@@ -65,15 +65,14 @@ fastlane/test_output
 fastlane/readme.md
 
 # Android Studio
-*.iml
-.gradle
-/local.properties
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
+MagicCalculator/*.iml
+MagicCalculator/.gradle
+MagicCalculator/local.properties
+MagicCalculator/.idea/
+MagicCalculator/.DS_Store
+MagicCalculator/build
+MagicCalculator/captures
+MagicCalculator/.externalNativeBuild
+
 
 MagicCalculator/dynamicbuttons/src/main/java/com/example/dynamicbuttons/Main\.java
