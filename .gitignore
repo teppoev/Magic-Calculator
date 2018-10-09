@@ -76,4 +76,15 @@ MagicCalculator/build
 MagicCalculator/captures
 MagicCalculator/.externalNativeBuild
 
+*.iml
+.gradle
+local.properties
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
 MagicCalculator/dynamicbuttons/src/main/java/com/example/dynamicbuttons/Main\.java
