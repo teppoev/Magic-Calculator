@@ -1,10 +1,9 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
+
+import static java.lang.Math.pow;
 
 public class Calculator implements ICalculator {
     private Map<String, Variable> variables = new HashMap<String, Variable>();
@@ -65,11 +64,11 @@ public class Calculator implements ICalculator {
                         }
                     }
                     else {
-                        throw new IOException("Ошибка ввода 0");
+                        throw new IOException("Ошибка ввода 0 " + ch  + " " + tmp + " " + lastCh);
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 1");
+                    throw new IOException("Ошибка ввода 1 " + ch  + " " + tmp + " " + lastCh);
                 }
             }
             else if (ch >= 'a' && ch <= 'z') {
@@ -88,7 +87,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else if (lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh >= 'a' && lastCh <= 'z') {
-                    tmp += String.valueOf(ch);
+                    tmp += ch;
                     lastCh = ch;
                     ++i;
                     if(i < string.length()) {
@@ -106,7 +105,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 2");
+                    throw new IOException("Ошибка ввода 2 " + ch + " " + tmp + " " + lastCh);
                 }
             }
             else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == ')' || ch == ',') {
@@ -149,11 +148,11 @@ public class Calculator implements ICalculator {
                         }
                     }
                     else {
-                        throw new IOException("Ошибка ввода 3");
+                        throw new IOException("Ошибка ввода 3 " + ch + " " + tmp + " " + lastCh);
                     }
                 }
                 else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
-                    throw new IOException("Ошибка ввода 4");
+                    throw new IOException("Ошибка ввода 4 " + ch  + " " + tmp + " " + lastCh);
                 }
                 else if (lastCh == ')'){
                     forAdd = new OperationToken(ch);
@@ -165,7 +164,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 5");
+                    throw new IOException("Ошибка ввода 5 " + ch  + " " + tmp + " " + lastCh);
                 }
             }
             else if (ch == '(') {
@@ -212,7 +211,7 @@ public class Calculator implements ICalculator {
                         }
                     }
                     else {
-                        throw new IOException("Ошибка ввода 6");
+                        throw new IOException("Ошибка ввода 6 " + ch  + " " + tmp + " " + lastCh);
                     }
                 }
                 else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
@@ -236,7 +235,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 7");
+                    throw new IOException("Ошибка ввода 7 " + ch  + " " + tmp + " " + lastCh);
                 }
             }
             else if (ch == '.') {
@@ -250,7 +249,7 @@ public class Calculator implements ICalculator {
                     isStarted = true;
                 }
                 else if (lastCh >= '0' && lastCh <= '9' || lastCh >= 'a' && lastCh <= 'z' || lastCh == '.') {
-                    throw new IOException("Ошибка ввода 8");
+                    throw new IOException("Ошибка ввода 8 " + ch  + " " + tmp + " " + lastCh);
                 }
                 else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
                     tmp += "0.";
@@ -273,9 +272,10 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 9");
+                    throw new IOException("Ошибка ввода 9 " + ch  + " " + tmp + " " + lastCh);
                 }
             }
+            else throw new IOException("Ошибка ввода Незнакомый символ" + ch + " " + tmp + " " + lastCh);
         }
 
         if (lastCh >= 'a' && lastCh <= 'z') {
@@ -288,7 +288,7 @@ public class Calculator implements ICalculator {
                 tokens.add(forAdd);
             }
             else {
-                throw new IOException("Ошибка ввода 7");
+                throw new IOException("Ошибка ввода 10" + ch + " " + tmp + " " + lastCh);
             }
         }
         else if (lastCh >= '0' && lastCh <= '9') {
@@ -296,7 +296,7 @@ public class Calculator implements ICalculator {
             tokens.add(forAdd);
         }
         else if (lastCh != ')') {
-            throw new IOException("Ошибка ввода 10");
+            throw new IOException("Ошибка ввода 11 " + ch  + " " + tmp + " " + lastCh);
         }
 
         tokens.add(new EmptyToken());
@@ -304,15 +304,16 @@ public class Calculator implements ICalculator {
     }
 
     private final char[][] ActionsTable = {
-         // \0  +  -  *  /  (  )  P  ^  F  ,
-            {4, 2, 2, 2, 2, 2, 6, 1, 2, 2, 9}, //\0
-            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9}, //+
-            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9}, //-
-            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9}, //*
-            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9}, ///
-            {7, 2, 2, 2, 2, 2, 5, 1, 2, 2, 10}, //(
-            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9}, //^
-            {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9}  //F
+         // \0  +  -  *  /  (  )  P  ^  F  ,  %
+            {4, 2, 2, 2, 2, 2, 6, 1, 2, 2, 9, 2}, //\0
+            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2}, //+
+            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2}, //-
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}, //*
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}, ///
+            {7, 2, 2, 2, 2, 2, 5, 1, 2, 2, 10,2}, //(
+            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3}, //^
+            {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9, 3}, //F
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}  //%
     };
 
     private int ActionsRowNumber(Token token) {
@@ -324,6 +325,7 @@ public class Calculator implements ICalculator {
             case '/': return 4;
             case '(': return 5;
             case '^': return 6;
+            case '%': return 8;
             default: return 7;
         }
     }
@@ -339,39 +341,12 @@ public class Calculator implements ICalculator {
             case ')': return 6;
             case '^': return 8;
             case ',': return 10;
+            case '%': return 11;
         }
         switch (token.getType()){
             case 1: return 7;
             case 4: return 7;
             default: return 9;
-        }
-    }
-
-    public class BraketsOpenException extends Exception{
-        public BraketsOpenException(){}
-        public BraketsOpenException(String S) {
-            super(S);
-        }
-    }
-
-    public class BraketsCloseException extends Exception{
-        BraketsCloseException(){}
-        BraketsCloseException(String S) {
-            super(S);
-        }
-    }
-
-    public class BraketsFunctionException extends Exception{
-        BraketsFunctionException(){}
-        BraketsFunctionException(String S) {
-            super(S);
-        }
-    }
-
-    public class ExtraCommaException extends Exception{
-        ExtraCommaException(){}
-        ExtraCommaException(String S) {
-            super(S);
         }
     }
 
@@ -389,28 +364,136 @@ public class Calculator implements ICalculator {
                 case 1: outtokens.add(intokens.get(i++));break;
                 case 2: S.push(intokens.get(i++)); break;
                 case 3: outtokens.add(S.peek()); S.pop(); break;
-                case 4: break;
-                case 5: S.pop(); i++; break;
+                case 4: outtokens.add(new EmptyToken()); break;
+                case 5: S.pop(); ++i; break;
                 case 6: throw new BraketsOpenException("There is no ( for ) in " + intokens + " at position " + i);
                 case 7: throw new BraketsOpenException("There is no ) for ( in " + intokens + " at position " + i);
                 case 8: throw new BraketsOpenException("There is no ( for ) in " + intokens + " at position " + i);
                 case 9: throw new ExtraCommaException("There is an extra comma in " + intokens + " at position " + i);
-                case 10: i++;
+                case 10: ++i;
             }
         } while (action != 4);
         return outtokens;
     }
 
-    public double calcPostfix(ArrayList<Token> tokens) {
-
-        return 0.0;
+    private double calcPostfix(ArrayList<Token> tokens) throws IncorrectPostfixException{
+        Stack<Token> S = new Stack<Token>();
+        Token tmp;
+        double[] tmps;
+        for (Token token : tokens) {
+            tmp = token;
+            switch (tmp.getType()) {
+                case 1:
+                    S.push(tmp);
+                    break;
+                case 2:
+                    tmps = new double[2];
+                    tmps[1] = Double.parseDouble(S.pop().getValue());
+                    tmps[0] = Double.parseDouble(S.pop().getValue());
+                    switch (tmp.getValue().charAt(0)) {
+                        case '+':
+                            S.push(new NumberToken(tmps[0] + tmps[1]));
+                            break;
+                        case '-':
+                            S.push(new NumberToken(tmps[0] - tmps[1]));
+                            break;
+                        case '*':
+                            S.push(new NumberToken(tmps[0] * tmps[1]));
+                            break;
+                        case '/':
+                            S.push(new NumberToken(tmps[0] / tmps[1]));
+                            break;
+                        case '^':
+                            S.push(new NumberToken(pow(tmps[0], tmps[1])));
+                            break;
+                        case '%':
+                            S.push(new NumberToken(tmps[0] % tmps[1]));
+                            break;
+                    }
+                    break;
+                case 3: {
+                    Function foo = new Function();
+                    if (functions.get(tmp.getValue()) != null) {
+                        foo = functions.get(tmp.getValue());
+                    } else throw new IncorrectPostfixException("Function was not found");
+                    int numberOfVariables = foo.getNumberOfVariables();
+                    tmps = new double[numberOfVariables];
+                    try {
+                        for (int j = 0; j < numberOfVariables; ++j) {
+                            tmps[numberOfVariables - 1 - j] = Double.parseDouble(S.pop().getValue());
+                        }
+                    } catch (EmptyStackException e) {
+                        throw new IncorrectPostfixException("There are not enough variables for function in stack");
+                    }
+                    S.push(new NumberToken(foo.calc(tmps)));
+                    break;
+                }
+                case 4:
+                    double number = 0;
+                    if (variables.get(tmp.getValue()) != null) {
+                        number = variables.get(tmp.getValue()).getValue();
+                    } else throw new IncorrectPostfixException("Variable was not found");
+                    S.push(new NumberToken(number));
+                    break;
+                case 5:
+                    return Double.parseDouble(S.peek().getValue());
+                case 6:
+                    throw new IncorrectPostfixException("There was found a comma in Postfix");
+            }
+        }
+        throw new IncorrectPostfixException("Something wrong in 3th function");
     }
 
-    public double calc(String string, Map<String, Variable> variables, Map<String, Function> functions)
-            throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException, ExtraCommaException {
-        this.variables = variables;
-        this.functions = functions;
+    class BraketsOpenException extends Exception{
+        public BraketsOpenException(){}
+        BraketsOpenException(String S) {
+            super(S);
+        }
+    }
+
+    class BraketsCloseException extends Exception{
+        public BraketsCloseException(){}
+        BraketsCloseException(String S) {
+            super(S);
+        }
+    }
+
+    class BraketsFunctionException extends Exception{
+        public BraketsFunctionException(){}
+        BraketsFunctionException(String S) {
+            super(S);
+        }
+    }
+
+    class ExtraCommaException extends Exception{
+        public ExtraCommaException(){}
+        ExtraCommaException(String S) {
+            super(S);
+        }
+    }
+
+    class IncorrectPostfixException extends Exception{
+        public IncorrectPostfixException(){}
+        IncorrectPostfixException(String S) {
+            super(S);
+        }
+    }
+
+    public double calc(String string, Map<String, Variable> _variables, Map<String, Function> _functions)
+            throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException, ExtraCommaException, IncorrectPostfixException {
+        variables = _variables;
+        functions = _functions;
         ArrayList<Token> tokens = new ArrayList<Token>();
-        return calcPostfix(infixToPostfix(this.filter(string)));
+        tokens = filter(string);
+        for (Token token : tokens) {
+            System.out.print(token.getValue() + " ");
+        }
+        System.out.println();
+        tokens = infixToPostfix(tokens);
+        for (Token token : tokens) {
+            System.out.print(token.getValue() + " ");
+        }
+        System.out.println();
+        return calcPostfix(tokens);
     }
 }

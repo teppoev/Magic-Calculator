@@ -1,78 +1,74 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
-public interface Token {
-    public int getType();
-    public String getValue();
+public abstract class Token {
+    abstract public int getType();
+    abstract public String getValue();
 }
 
-class NumberToken implements Token{
+class NumberToken extends Token{
     private double value;
-    private final int type = 1;
-    public NumberToken(double _value) {
+    NumberToken(double _value) {
         value = _value;
     }
     public String getValue() {
         return String.valueOf(value);
     }
     public int getType() {
-        return type;
+        return 1;
     }
 }
 
-class OperationToken implements Token{
+class OperationToken extends Token{
     private char value;
-    private final int type = 2;
-    public OperationToken(char _value) {
+    OperationToken(char _value) {
         value = _value;
     }
     public String getValue() {
         return String.valueOf(value);
     }
     public int getType() {
-        return type;
+        return 2;
     }
 }
 
-class FunctionToken implements Token{
+class FunctionToken extends Token{
     private String value;
-    private final int type = 3;
-    public FunctionToken(String _value) {
+    FunctionToken(String _value) {
         value = _value;
     }
     public String getValue() {
         return value;
     }
     public int getType() {
-        return type;
+        return 3;
     }
 }
 
-class VariableToken implements Token{
+class VariableToken extends Token{
     private String value;
-    private final int type = 4;
-    public VariableToken(String _value) {
+    VariableToken(String _value) {
         value = _value;
     }
     public String getValue() {
         return value;
     }
     public int getType() {
-        return type;
+        return 4;
     }
 }
 
-class EmptyToken implements Token{
-    private final String value = "\0";
-    private final int type = 5;
-    public EmptyToken(){}
-    public String getValue() {return value; }
-    public int getType() { return type; }
+class EmptyToken extends Token{
+    EmptyToken(){}
+    public String getValue() {
+        return "\0"; }
+    public int getType() {
+        return 5; }
 }
 
-class CommaToken implements  Token{
-    private final String value = ",";
-    private final int type = 6;
+class CommaToken extends  Token{
     public CommaToken() {}
-    public String getValue() {return value; }
-    public int getType() {return type; }
+    public String getValue() {
+        return ","; }
+    public int getType() {
+        return 6; }
 }

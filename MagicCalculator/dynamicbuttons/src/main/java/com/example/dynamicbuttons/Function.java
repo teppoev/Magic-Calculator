@@ -1,12 +1,22 @@
-package ru.spbu.twothreeone;
+package com.example.dynamicbuttons;
 
 public class Function {
     private String code; //or file instead String
-    public Function() {}
-    public Function(String _text) {
+    private int numberOfVariables = 1;
+    Function() {}
+    Function(String _text, int _num) {
         code = _text;
+        numberOfVariables = _num;
     }
-    public double calc(double variable) {
+
+    int getNumberOfVariables() {
+        return numberOfVariables;
+    }
+    public void setNumberOfVariables(int _num) {
+        numberOfVariables = _num;
+    }
+
+    double calc(double[] params) {
         double result = 1.;
         //There should execute code with variable giving result
         return result;
