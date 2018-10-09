@@ -75,3 +75,5 @@ fastlane/readme.md
 /build
 /captures
 .externalNativeBuild
+
+MagicCalculator/dynamicbuttons/src/main/java/com/example/dynamicbuttons/Main\.java
