@@ -1,4 +1,4 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
 import java.io.IOException;
 import java.util.ArrayList;

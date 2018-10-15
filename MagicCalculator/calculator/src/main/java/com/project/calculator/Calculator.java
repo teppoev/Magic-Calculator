@@ -1,9 +1,10 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
 import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 public class Calculator implements ICalculator {
     private Map<String, Variable> variables = new HashMap<String, Variable>();
@@ -18,7 +19,7 @@ public class Calculator implements ICalculator {
         char ch = string.charAt(i), lastCh = string.charAt(i);
         while (i < string.length()) {
             if (ch >= '0' && ch <= '9') {
-                if (lastCh >= '0' && lastCh <= '9' || lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == '.' || lastCh == ',') {
+                if (lastCh >= '0' && lastCh <= '9' || lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == '.' || lastCh == ',' || lastCh == '√') {
                     tmp += String.valueOf(ch);
                     lastCh = ch;
                     ++i;
@@ -86,7 +87,7 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh >= 'a' && lastCh <= 'z') {
+                else if (lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == '√' || lastCh >= 'a' && lastCh <= 'z') {
                     tmp += ch;
                     lastCh = ch;
                     ++i;
@@ -108,7 +109,7 @@ public class Calculator implements ICalculator {
                     throw new IOException("Ошибка ввода 2 " + ch + " " + tmp + " " + lastCh);
                 }
             }
-            else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == ')' || ch == ',') {
+            else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == ')' || ch == ',' || ch == '√') {
                 if (lastCh >= '0' && lastCh <= '9' || lastCh == '.') {
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -151,7 +152,7 @@ public class Calculator implements ICalculator {
                         throw new IOException("Ошибка ввода 3 " + ch + " " + tmp + " " + lastCh);
                     }
                 }
-                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
+                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == '√') {
                     throw new IOException("Ошибка ввода 4 " + ch  + " " + tmp + " " + lastCh);
                 }
                 else if (lastCh == ')'){
@@ -214,7 +215,7 @@ public class Calculator implements ICalculator {
                         throw new IOException("Ошибка ввода 6 " + ch  + " " + tmp + " " + lastCh);
                     }
                 }
-                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
+                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == '√') {
                     forAdd = new OperationToken(ch);
                     tokens.add(forAdd);
                     lastCh = ch;
@@ -251,7 +252,7 @@ public class Calculator implements ICalculator {
                 else if (lastCh >= '0' && lastCh <= '9' || lastCh >= 'a' && lastCh <= 'z' || lastCh == '.') {
                     throw new IOException("Ошибка ввода 8 " + ch  + " " + tmp + " " + lastCh);
                 }
-                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
+                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == '√') {
                     tmp += "0.";
                     isStarted = true;
                     lastCh = ch;
@@ -304,16 +305,17 @@ public class Calculator implements ICalculator {
     }
 
     private final char[][] ActionsTable = {
-         // \0  +  -  *  /  (  )  P  ^  F  ,  %
-            {4, 2, 2, 2, 2, 2, 6, 1, 2, 2, 9, 2}, //\0
-            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2}, //+
-            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2}, //-
-            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}, //*
-            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}, ///
-            {7, 2, 2, 2, 2, 2, 5, 1, 2, 2, 10,2}, //(
-            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3}, //^
-            {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9, 3}, //F
-            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3}  //%
+         // \0  +  -  *  /  (  )  P  ^  F  ,  %  √
+            {4, 2, 2, 2, 2, 2, 6, 1, 2, 2, 9, 2, 2}, //\0
+            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2, 2}, //+
+            {3, 3, 3, 2, 2, 2, 3, 1, 2, 2, 9, 2, 2}, //-
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3, 2}, //*
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3, 2}, ///
+            {7, 2, 2, 2, 2, 2, 5, 1, 2, 2, 10,2, 2}, //(
+            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3, 2}, //^
+            {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9, 3, 8}, //F
+            {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3, 2}, //%
+            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3, 2}, //√
     };
 
     private int ActionsRowNumber(Token token) {
@@ -326,6 +328,7 @@ public class Calculator implements ICalculator {
             case '(': return 5;
             case '^': return 6;
             case '%': return 8;
+            case '√': return 9;
             default: return 7;
         }
     }
@@ -342,6 +345,7 @@ public class Calculator implements ICalculator {
             case '^': return 8;
             case ',': return 10;
             case '%': return 11;
+            case '√': return 12;
         }
         switch (token.getType()){
             case 1: return 7;
@@ -408,6 +412,9 @@ public class Calculator implements ICalculator {
                             break;
                         case '%':
                             S.push(new NumberToken(tmps[0] % tmps[1]));
+                            break;
+                        case '√':
+                            S.push(new NumberToken(sqrt(tmps[1])));
                             break;
                     }
                     break;

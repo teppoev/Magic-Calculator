@@ -437,7 +437,7 @@ public class UserProgram implements IFunction{
                     }
 
                     IAction upperAction = actionsQueue.peek();
-                    actionsQueue.add(new ForAction(varName, left, right, upperAction);
+                    actionsQueue.add(new ForAction(varName, left, right, upperAction));
 
                     line.iterator();
                     break;

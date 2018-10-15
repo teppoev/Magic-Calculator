@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Calculator</string>
-    <string name="output_window">0</string>
+    <string name="output_window"></string>
+    <string name="additional_output_window"></string>
     <string name="button_sin">sin</string>
     <string name="button_cos">cos</string>
     <string name="button_tan">tan</string>
@@ -30,4 +31,8 @@
     <string name="button_0">0</string>
     <string name="button_е">е</string>
     <string name="button_.">.</string>
+    <string name="item1">Settings</string>
+    <string name="item2">Help</string>
+    <string name="item3">Programmable Buttons</string>
+    <string name="programmable_buttons">My button</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
 public abstract class Token {
     abstract public int getType();
