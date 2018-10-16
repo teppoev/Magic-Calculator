@@ -19,22 +19,9 @@ public class TestDynamicButtons extends AppCompatActivity
     private LinearLayout buttonShelf;
     private int buttonCounter = 0;
     private TextView answerView;
+    private UserProgramCompiler compiler;
 
     private Map<String, IFunction> buttonsPrograms;
-
-    private IFunction GenerateFunction(final String body) {
-        return new IFunction() {
-            @Override
-            public double Calculate(double[] params) throws  NumberFormatException {
-                try {
-                    return Double.parseDouble(body);
-                }
-                catch(NumberFormatException e) {
-                    throw new NumberFormatException(body.toString());
-                }
-            }
-        };
-    }
 
     private void CreatingButton(String name, String body) {
 
@@ -47,14 +34,15 @@ public class TestDynamicButtons extends AppCompatActivity
                     new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                             TableRow.LayoutParams.WRAP_CONTENT);
 
-            IFunction function = GenerateFunction(body);
+
+            IFunction function = compiler.Compile(body, 3);
             newButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String name = newButton.getText().toString();
                     IFunction function = buttonsPrograms.get(name);
                     if(function != null) {
-                        double answer = function.Calculate(new double[1]);
+                        double answer = function.Calculate(new double[] {1, 2, 3});
                         answerView.setText(name + " " + Double.toString(answer));
                     }
                 }
@@ -93,6 +81,8 @@ public class TestDynamicButtons extends AppCompatActivity
         buttonShelf = (LinearLayout)findViewById(R.id.shelf);
 
         answerView = (TextView) findViewById(R.id.answer_view);
+
+        compiler = new UserProgramCompiler();
 
         Button magicButton = (Button)findViewById(R.id.createbut);
         View.OnClickListener clickHandler = new View.OnClickListener() {

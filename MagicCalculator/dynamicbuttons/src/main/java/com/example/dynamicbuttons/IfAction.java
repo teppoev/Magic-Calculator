@@ -11,6 +11,7 @@ public class IfAction extends ActionWithBody {
     private String rightName;
 
     IfAction(String _l, String _r, IFunction _cmp) {
+        super();
         leftName = _l;
         rightName = _r;
         cmp = _cmp;

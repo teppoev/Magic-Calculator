@@ -1,5 +1,8 @@
 package com.example.dynamicbuttons;
 
+import android.util.Log;
+
+import java.io.Console;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,14 +11,18 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
+import java.util.logging.ConsoleHandler;
 
 public class UserProgramCompiler {
 
-    UserProgramCompiler(String program) {
-        Compile(program);
+    UserProgramCompiler() {
+        calculator = new Calculator();
+        functions = new HashMap<>();
+        actionsStack = new Stack<>();
     }
 
     private Calculator calculator;
+
     private Map<String, IFunction> functions;
 
     enum TokenType {
@@ -33,22 +40,21 @@ public class UserProgramCompiler {
         NumToken,
         MathToken;
 
-        private static String VarTokenRegEx = "([A-Za-z_])([\\w\\d])*";
-        private static String NumberTokenRegEx = "((\\d)+)|((\\d)+\\.(\\d)+)";
+        private static String VarTokenRegEx = "[a-zA-Z_](\\w|\\d)*";
+        private static String NumberTokenRegEx = "(\\d+)|(\\d+\\.\\d+)";
 
         static public TokenType GetTypeOf(String word) {
 
-            if(word == "for") return ForToken;
-            if(word == "if") return IfToken;
-            if(word == "in") return InToken;
-            if(word == "else") return ElseToken;
-            if(word == "new") return NewToken;
-            if(word == "=") return EqualToken;
-            if(word == "...") return RangeToken;
-            if(word == "<" || word == ">" || word == "=") return CompareToken;
-            if(word == "*" || word == "/" || word == "+" || word == "-" ||
-                    word == "^") return MathToken;
-
+            if(word.equals("for")) return ForToken;
+            if(word.equals("if")) return IfToken;
+            if(word.equals("in")) return InToken;
+            if(word.equals("else")) return ElseToken;
+            if(word.equals("new")) return NewToken;
+            if(word.equals("=")) return EqualToken;
+            if(word.equals("...")) return RangeToken;
+            if(word.equals("<") || word.equals(">") || word.equals("=")) return CompareToken;
+            if(word.equals("*") || word.equals("/") || word.equals("+") || word.equals("-") ||
+                    word.equals("^")) return MathToken;
 
             if(word.matches(VarTokenRegEx)) return VarToken;
             if(word.matches(NumberTokenRegEx)) return NumToken;
@@ -77,7 +83,14 @@ public class UserProgramCompiler {
         }
     }
 
-    private void Compile(String program) {
+    public IFunction Compile(String program, int argNum) {
+
+        actionsStack.clear();
+        currentNestingLevel = 1;
+
+        ActionWithBody main = new SimpleBodyAction();
+        actionsStack.add(main);
+
         String[] lines = program.split("\n");
         for(String line: lines) {
             int level = GetNestingLevel(line);
@@ -92,19 +105,25 @@ public class UserProgramCompiler {
                 currentNestingLevel++;
             }
             else {
+                Log.d("MyTag", "Compile: current level is " + Integer.toString(level) + " " + line);
                 while(level < currentNestingLevel) {
                     actionsStack.pop();
+                    currentNestingLevel--;
                 }
             }
 
             CompileTokenLine(tokenLine);
         }
+
+        return new Function(argNum, main);
     }
 
     private int GetNestingLevel(String line) {
         int level;
-        for(level = 0; line.charAt(level) == '\t'; level++) { }
-        return level;
+        line = line.replaceAll("    ", "\t");
+        for(level = 0; level < line.length() && line.charAt(level) == '\t'; level++) {
+        }
+        return level + 1;
     }
 
     private IFunction GetCmp(Token t) {
@@ -115,6 +134,10 @@ public class UserProgramCompiler {
                     public double Calculate(double[] params) {
                         return (params[0] > params[1]) ? 1.0 : 0.0;
                     };
+                    @Override
+                    public int getNumberOfArgs() {
+                        return 2;
+                    }
                 };
             }
             case "<": {
@@ -123,6 +146,10 @@ public class UserProgramCompiler {
                     public double Calculate(double[] params) {
                         return (params[0] < params[1]) ? 1.0 : 0.0;
                     }
+                    @Override
+                    public int getNumberOfArgs() {
+                        return 2;
+                    }
                 };
             }
             case "=": {
@@ -130,6 +157,10 @@ public class UserProgramCompiler {
                     @Override
                     public double Calculate(double[] params) {
                         return (params[0] == params[1]) ? 1.0 : 0.0;
+                    }
+                    @Override
+                    public int getNumberOfArgs() {
+                        return 2;
                     }
                 };
             }
@@ -140,16 +171,31 @@ public class UserProgramCompiler {
     }
 
     private List<Token> TokenizeLine(String line) {
-        String[] specialSymbols = new String[] { "+", "-", "*", "/", "(", ")", ">", "<", "=", ".." };
-        for(String smbl : specialSymbols) {
-            line.replaceAll(smbl, " " + smbl + " ");
+        String[] symbolsForRegExp = new String[] { "\\+", "\\-", "\\*", "/", "\\(", "\\)", ">", "<", "=", "\\.\\.\\." };
+        String[] specialSymbols = new String[] { "+", "-", "*", "/", "(", ")", ">", "<", "=", "..." };
+
+        for (int i = 0; i < symbolsForRegExp.length; i++) {
+            line = line.replaceAll(symbolsForRegExp[i], " " + specialSymbols[i] + " ");
+        }
+        Log.d("MyTag", line);
+        String[] words = line.split("\\s");
+
+        for(int i = 0; i < words.length; i++) {
+            words[i] = words[i].replaceAll("\\s", "");
         }
 
-        String[] words = line.split("\\s");
-        List<Token> tokenList = new ArrayList<Token>();
+        List<Token> tokenList = new ArrayList<>();
 
         for(String word : words) {
-            tokenList.add(new Token(TokenType.GetTypeOf(word), word));
+            if(word.isEmpty()) {
+                continue;
+            }
+            TokenType type = TokenType.GetTypeOf(word);
+            if(type == null) {
+                Log.d("MyTag", "null type");
+            }
+            tokenList.add(new Token(type, word));
+            Log.d("MyTag", "\"" + word + "\"");
         }
         return tokenList;
     }
@@ -188,6 +234,7 @@ public class UserProgramCompiler {
 
             ForAction action = new ForAction(left.GetWord(), right.GetWord(), varName.GetWord());
             action.SetParent(actionsStack.peek());
+            actionsStack.peek().AddAction(action);
             actionsStack.add(action);
             currentNestingLevel++;
         }
@@ -211,8 +258,23 @@ public class UserProgramCompiler {
 
             IfAction action = new IfAction(left.GetWord(), right.GetWord(), GetCmp(operand));
             action.SetParent(actionsStack.peek());
+            actionsStack.peek().AddAction(action);
+
             actionsStack.add(action);
             currentNestingLevel++;
+        }
+
+        if(t.GetType() == TokenType.NewToken) {
+            if (line.size() < 2) {
+                throw new Error("Expected var name");
+            }
+            Token varName = iter.next();
+            if (varName.GetType() != TokenType.VarToken) {
+                throw new Error("Expected var name");
+            }
+            NewAction action = new NewAction(varName.GetWord());
+            action.SetParent(actionsStack.peek());
+            actionsStack.peek().AddAction(action);
         }
         if(t.GetType() == TokenType.VarToken) {
             // <varName> = <expression>
@@ -222,18 +284,18 @@ public class UserProgramCompiler {
             Token variable = t;
             Token equalSign = iter.next();
             if(equalSign.GetType() != TokenType.EqualToken) {
-                throw new Error("Expected equal sign");
+                throw new Error("Expected equal sign, met " + equalSign.GetWord() + " type: " + equalSign.GetType().toString());
             }
             String expression = "";
             while(iter.hasNext()) {
                 Token currToken = iter.next();
-                if(currToken.GetType() != TokenType.MathToken ||
-                        currToken.GetType() != TokenType.NumToken ||
+                if(currToken.GetType() != TokenType.MathToken &&
+                        currToken.GetType() != TokenType.NumToken &&
                         currToken.GetType() != TokenType.VarToken)
                 {
                     throw new Error("Expected math operand or numbers or variable names");
                 }
-                expression.concat(currToken.GetWord());
+                expression = expression + currToken.GetWord();
             }
             if(expression.isEmpty()) {
                 throw new Error("Empty expression");
@@ -241,15 +303,6 @@ public class UserProgramCompiler {
             Action action = new AssignmentAction(variable.GetWord(), expression, functions);
             action.SetParent(actionsStack.peek());
             actionsStack.peek().AddAction(action);
-        }
-        if(t.GetType() == TokenType.NewToken) {
-            if(line.size() != 2) {
-                throw new Error("Incorrect assignment action");
-            }
-            Token varName = iter.next();
-            if(varName.GetType() != TokenType.VarToken) {
-                throw new Error("Expected new variable name");
-            }
         }
         if(t.GetType() == TokenType.ElseToken) {
             if(line.size() != 1) {

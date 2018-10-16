@@ -1,5 +1,7 @@
 package com.example.dynamicbuttons;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +9,11 @@ public abstract class ActionWithBody extends Action {
 
     protected List<IAction> actions;
     protected Map<String, Variable> variables;
+
+    ActionWithBody() {
+        actions = new ArrayList<>();
+        variables = new HashMap<>();
+    }
 
     public void AddAction(IAction action) {
         actions.add(action);
@@ -34,11 +41,13 @@ public abstract class ActionWithBody extends Action {
     }
 
     public boolean IsDefinedVariable(String name) {
-        if(variables.containsKey(name)) {
+        if (variables.containsKey(name)) {
             return true;
         }
-        if(parent.IsDefinedVariable(name)) {
-            return true;
+        if (parent != null) {
+            if (parent.IsDefinedVariable(name)) {
+                return true;
+            }
         }
         return false;
     }

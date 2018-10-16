@@ -1,6 +1,9 @@
 package com.example.dynamicbuttons;
 
+import android.util.Log;
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class AssignmentAction extends Action {
@@ -27,7 +30,13 @@ public class AssignmentAction extends Action {
         if(variable != null) {
             Map<String, Variable> localVariables = new HashMap<>();
             parent.GetAllLocalVariables(localVariables);
-            variable.setValue(calculator.calc(expression, localVariables, functions));
+
+            try {
+                variable.setValue(calculator.calc(expression, localVariables, functions));
+            }
+            catch (Exception e) {
+                throw new Error(e.getMessage());
+            }
         }
         else {
             throw new Error("AssignmentAction:Do:Indefined variable");

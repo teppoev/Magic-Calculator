@@ -6,8 +6,8 @@ import java.util.*;
 import static java.lang.Math.pow;
 
 public class Calculator implements ICalculator {
-    private Map<String, Variable> variables = new HashMap<String, Variable>();
-    private Map<String, Function> functions = new HashMap<String, Function>();
+    private Map<String, Variable> variables;
+    private Map<String, IFunction> functions;
     private ArrayList<Token> filter(String string) throws IOException {
         ArrayList<Token> tokens = new ArrayList<Token>();
         Token forAdd;
@@ -412,11 +412,11 @@ public class Calculator implements ICalculator {
                     }
                     break;
                 case 3: {
-                    Function foo = new Function();
+                    IFunction foo;
                     if (functions.get(tmp.getValue()) != null) {
                         foo = functions.get(tmp.getValue());
                     } else throw new IncorrectPostfixException("Function was not found");
-                    int numberOfVariables = foo.getNumberOfVariables();
+                    int numberOfVariables = foo.getNumberOfArgs();
                     tmps = new double[numberOfVariables];
                     try {
                         for (int j = 0; j < numberOfVariables; ++j) {
@@ -425,7 +425,7 @@ public class Calculator implements ICalculator {
                     } catch (EmptyStackException e) {
                         throw new IncorrectPostfixException("There are not enough variables for function in stack");
                     }
-                    S.push(new NumberToken(foo.calc(tmps)));
+                    S.push(new NumberToken(foo.Calculate(tmps)));
                     break;
                 }
                 case 4:
@@ -479,7 +479,7 @@ public class Calculator implements ICalculator {
         }
     }
 
-    public double calc(String string, Map<String, Variable> _variables, Map<String, Function> _functions)
+    public double calc(String string, Map<String, Variable> _variables, Map<String, IFunction> _functions)
             throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException, ExtraCommaException, IncorrectPostfixException {
         variables = _variables;
         functions = _functions;
