@@ -7,6 +7,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -16,9 +18,55 @@ public class CreateButtonWindow extends DialogFragment {
     private EditText text;
     private EditText body;
 
+    private TextWatcher textWatcher;
+
     public interface CreateButtonWindowListener {
         public void onDialogPositiveClick(CreateButtonWindow dialog);
         public void onDialogNegativeClick(CreateButtonWindow dialog);
+    }
+
+    void TextCorrection(EditText textBox, Editable s, boolean isIncreased) {
+        textBox.removeTextChangedListener(textWatcher);
+
+        boolean isLineBegins = true;
+        int lineBegin = 0;
+        String text = s.toString();
+        int spaceNum = 0;
+        for(int i = 0; i < text.length(); ++i) {
+            if(isLineBegins) {
+                if (text.charAt(i) == ' ' || text.charAt(i) == '\t') {
+                    spaceNum++;
+                }
+                else {
+                    isLineBegins = false;
+                    if(spaceNum % 2 == 1) {
+                        if(isIncreased) {
+                            text = text.substring(0, i) + " " + text.substring(i, text.length());
+                            ++i;
+                        }
+                        else {
+                            text = text.substring(0, i - 1) + text.substring(i, text.length());
+                            --i;
+                        }
+                    }
+                }
+            }
+            if(text.charAt(i) == '\n') {
+                isLineBegins = true;
+                lineBegin = i + 1;
+                spaceNum = 0;
+            }
+        }
+        if(spaceNum % 2 == 1) {
+            if (isIncreased) {
+                text = text.substring(0, lineBegin) + " " + text.substring(lineBegin, text.length());
+            } else {
+                text = text.substring(0, lineBegin - 1) + text.substring(lineBegin, text.length());
+            }
+        }
+        s.clear();
+        s.append(text.subSequence(0, text.length()));
+        textBox.addTextChangedListener(textWatcher);
     }
 
     @Override
@@ -28,6 +76,27 @@ public class CreateButtonWindow extends DialogFragment {
         View view = getActivity().getLayoutInflater().inflate(R.layout.layout, null);
         text = (EditText) view.findViewById(R.id.function_name);
         body = (EditText) view.findViewById(R.id.function_body);
+
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int pos =  body.getSelectionStart();
+                TextCorrection(body, s, true);
+                body.setSelection(pos);
+            }
+        };
+
+        body.addTextChangedListener(textWatcher);
 
         builder.setView(view);
 
