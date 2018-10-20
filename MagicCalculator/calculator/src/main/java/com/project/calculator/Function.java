@@ -1,4 +1,4 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
 public class Function {
     private String code; //or file instead String

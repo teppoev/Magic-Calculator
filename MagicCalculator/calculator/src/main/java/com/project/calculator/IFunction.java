@@ -1,4 +1,4 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
 public interface IFunction {
     public double Calculate(double[] params);
