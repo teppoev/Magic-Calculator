@@ -20,85 +20,20 @@
         app:layout_constraintTop_toBottomOf="@+id/outsideLinearLayout">
 
         <LinearLayout
+            android:id="@+id/button_shelf"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/my_button_1"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
+                android:id="@+id/new_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_2"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_3"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_4"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_5"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_6"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_weight="1"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-            <Button
-                android:id="@+id/my_button_7"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="@android:color/background_dark"
-                android:text="@string/programmable_buttons"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
+                android:background="@color/colorAccent"
+                android:text="@string/newbut"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="512dp" />
         </LinearLayout>
     </HorizontalScrollView>
 
@@ -424,7 +359,7 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/buttondot"
+                android:id="@+id/buttdot"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:background="@android:color/background_dark"
@@ -548,4 +483,5 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/additional_output_view" />
+
 </android.support.constraint.ConstraintLayout>
