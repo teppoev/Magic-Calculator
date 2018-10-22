@@ -50,7 +50,13 @@ public class MainActivity extends AppCompatActivity
                     String name = ((Button)v).getText().toString();
                     IFunction function = functionMap.get(name);
                     if(function != null) {
+                        if (isAnswered) {
+                            grayOutView.setText(outView.getText());
+                            outView.setText("");
+                            isAnswered = false;
+                        }
                         outView.append(name + "(");
+                        ++nob;
                     }
                 }
             });
@@ -155,9 +161,14 @@ public class MainActivity extends AppCompatActivity
 
         if (v.getId() == R.id.buttonC) {
             outView.setText("");
+            nob = 0;
         }
         else if (v.getId() == R.id.buttondelete){
+            char lastCh;
             if (outView.getText().toString().length() != 0) {
+                lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                if (lastCh == '(') --nob;
+                else if (lastCh == ')') ++nob;
                 outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
             } else {
                 outView.setText("");
