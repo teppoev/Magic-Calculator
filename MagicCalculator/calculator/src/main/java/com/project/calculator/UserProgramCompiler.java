@@ -38,7 +38,7 @@ public class UserProgramCompiler {
         NumToken,
         MathToken;
 
-        private static String VarTokenRegEx = "[a-zA-Z_](\\w|\\d)*";
+        private static String VarTokenRegEx = "[a-zA-Z_]([a-zA-Z0-9_])*";
         private static String NumberTokenRegEx = "(\\d+)|(\\d+\\.\\d+)";
 
         static public TokenType GetTypeOf(String word) {
@@ -253,7 +253,7 @@ public class UserProgramCompiler {
                 throw new Error("Expected number of var as left operand");
             }
             Token operand = iter.next();
-            if (operand.GetType() != TokenType.CompareToken) {
+            if (operand.GetType() != TokenType.CompareToken && operand.GetType() != TokenType.EqualToken) {
                 throw new Error("Expected compare token after left operand");
             }
             Token right = iter.next();
