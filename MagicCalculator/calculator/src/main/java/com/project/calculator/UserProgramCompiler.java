@@ -21,6 +21,8 @@ public class UserProgramCompiler {
 
     private Map<String, IFunction> functions;
 
+    private IfAction lastIfAction;
+
     enum TokenType {
 
         ForToken,
@@ -103,12 +105,19 @@ public class UserProgramCompiler {
             else {
                 Log.d("MyTag", "Compile: current level is " + Integer.toString(level) + " " + line);
                 while(level < currentNestingLevel) {
-                    actionsStack.pop();
+                    try {
+                        IfAction ifAction = (IfAction) actionsStack.pop();
+                        lastIfAction = ifAction;
+                    }
+                    catch (ClassCastException e) {
+
+                    }
                     currentNestingLevel--;
                 }
             }
 
             CompileTokenLine(tokenLine);
+                lastIfAction = null;
         }
 
         return new Function(argNum, main);
@@ -252,11 +261,11 @@ public class UserProgramCompiler {
                 throw new Error("Expected number of var as right operand");
             }
 
-            IfAction action = new IfAction(left.GetWord(), right.GetWord(), GetCmp(operand));
-            action.SetParent(actionsStack.peek());
-            actionsStack.peek().AddAction(action);
+            ActionWithBody ifAction = new IfAction(left.GetWord(), right.GetWord(), GetCmp(operand));
+            ifAction.SetParent(actionsStack.peek());
+            actionsStack.peek().AddAction(ifAction);
 
-            actionsStack.add(action);
+            actionsStack.add(ifAction);
             currentNestingLevel++;
         }
 
@@ -305,14 +314,13 @@ public class UserProgramCompiler {
                 throw new Error("Incorrect else");
             }
             try {
-                IfAction ifAction = (IfAction)actionsStack.pop();
-
                 ActionWithBody elseAction = new SimpleBodyAction();
-                elseAction.SetParent(ifAction.GetParent());
+                elseAction.SetParent(lastIfAction.GetParent());
 
-                ifAction.SetElseAction(elseAction);
+                lastIfAction.SetElseAction(elseAction);
 
                 actionsStack.add(elseAction);
+
 
                 currentNestingLevel++;
             }
