@@ -1,15 +1,12 @@
-package com.example.dynamicbuttons;
+package com.project.calculator;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
@@ -73,7 +70,7 @@ public class CreateButtonWindow extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.layout, null);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.user_program_editor, null);
         text = (EditText) view.findViewById(R.id.function_name);
         body = (EditText) view.findViewById(R.id.function_body);
 

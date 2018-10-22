@@ -35,4 +35,6 @@
     <string name="item2">Help</string>
     <string name="item3">Programmable Buttons</string>
     <string name="programmable_buttons">My button</string>
+    <string name="newbut">Add...</string>
+
 </resources>

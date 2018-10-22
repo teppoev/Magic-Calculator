@@ -1,5 +1,6 @@
 package com.project.calculator;
 
 public interface IFunction {
-    public double Calculate(double[] params);
+    double Calculate(double[] params);
+    int getNumberOfArgs();
 }
