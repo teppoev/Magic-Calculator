@@ -14,13 +14,13 @@ public class Calculator implements ICalculator {
         Token forAdd;
         String tmp = "";
         boolean isStarted = false;
+        boolean isVariable = false;
         int i = 0;
-        boolean isFrac = false;
         char ch = string.charAt(i), lastCh = string.charAt(i);
         while (i < string.length()) {
             if (ch >= '0' && ch <= '9') {
                 if (lastCh >= '0' && lastCh <= '9' || lastCh =='+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == '.' || lastCh == ',' || lastCh == '√') {
-                    tmp += String.valueOf(ch);
+                    tmp += ch;
                     lastCh = ch;
                     ++i;
                     if(i < string.length()) {
@@ -109,7 +109,7 @@ public class Calculator implements ICalculator {
                     throw new IOException("Ошибка ввода 2 " + ch + " " + tmp + " " + lastCh);
                 }
             }
-            else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == ')' || ch == ',' || ch == '√') {
+            else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^' || ch == '%' || ch == ')' || ch == ',') {
                 if (lastCh >= '0' && lastCh <= '9' || lastCh == '.') {
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -152,10 +152,10 @@ public class Calculator implements ICalculator {
                         throw new IOException("Ошибка ввода 3 " + ch + " " + tmp + " " + lastCh);
                     }
                 }
-                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == '√') {
+                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',') {
                     throw new IOException("Ошибка ввода 4 " + ch  + " " + tmp + " " + lastCh);
                 }
-                else if (lastCh == ')'){
+                else if (lastCh == ')' || lastCh == '√'){
                     forAdd = new OperationToken(ch);
                     tokens.add(forAdd);
                     lastCh = ch;
@@ -275,6 +275,67 @@ public class Calculator implements ICalculator {
                 else {
                     throw new IOException("Ошибка ввода 9 " + ch  + " " + tmp + " " + lastCh);
                 }
+            } else if (ch == '√'){
+                if (lastCh >= '0' && lastCh <= '9' || lastCh == '.') {
+                    forAdd = new NumberToken(Double.parseDouble(tmp));
+                    tokens.add(forAdd);
+                    tmp = "";
+                    isStarted = false;
+                    forAdd = new OperationToken('*');
+                    tokens.add(forAdd);
+                    forAdd = new OperationToken(ch);
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else if (lastCh >= 'a' && lastCh <= 'z'){
+                    if (variables.get(tmp) != null) {
+                        forAdd = new VariableToken(tmp);
+                        tokens.add(forAdd);
+                        tmp = "";
+                        forAdd = new OperationToken('*');
+                        tokens.add(forAdd);
+                        forAdd = new OperationToken(ch);
+                        tokens.add(forAdd);
+                        lastCh = ch;
+                        ++i;
+                        if(i < string.length()) {
+                            ch = string.charAt(i);
+                        }
+                    }
+                    else if (functions.get(tmp) != null) {
+                        forAdd = new FunctionToken(tmp);
+                        tokens.add(forAdd);
+                        tmp = "";
+                        forAdd = new OperationToken('*');
+                        tokens.add(forAdd);
+                        forAdd = new OperationToken(ch);
+                        tokens.add(forAdd);
+                        lastCh = ch;
+                        ++i;
+                        if(i < string.length()) {
+                            ch = string.charAt(i);
+                        }
+                    }
+                    else {
+                        throw new IOException("Ошибка ввода 10 " + ch + " " + tmp + " " + lastCh);
+                    }
+                }
+                else if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '^' || lastCh == '%' || lastCh == '(' || lastCh == ',' || lastCh == ')' || lastCh == '√') {
+                    forAdd = new OperationToken(ch);
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else {
+                    throw new IOException("Ошибка ввода 11 " + ch  + " " + tmp + " " + lastCh);
+                }
             }
             else throw new IOException("Ошибка ввода Незнакомый символ" + ch + " " + tmp + " " + lastCh);
         }
@@ -289,7 +350,7 @@ public class Calculator implements ICalculator {
                 tokens.add(forAdd);
             }
             else {
-                throw new IOException("Ошибка ввода 10" + ch + " " + tmp + " " + lastCh);
+                throw new IOException("Ошибка ввода 12" + ch + " " + tmp + " " + lastCh);
             }
         }
         else if (lastCh >= '0' && lastCh <= '9') {
@@ -297,7 +358,7 @@ public class Calculator implements ICalculator {
             tokens.add(forAdd);
         }
         else if (lastCh != ')') {
-            throw new IOException("Ошибка ввода 11 " + ch  + " " + tmp + " " + lastCh);
+            throw new IOException("Ошибка ввода 13 " + ch  + " " + tmp + " " + lastCh);
         }
 
         tokens.add(new EmptyToken());
@@ -315,7 +376,7 @@ public class Calculator implements ICalculator {
             {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3, 2}, //^
             {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9, 3, 8}, //F
             {3, 3, 3, 3, 3, 2, 3, 1, 2, 2, 9, 3, 2}, //%
-            {3, 3, 3, 3, 3, 2, 3, 1, 3, 2, 9, 3, 2}, //√
+            {3, 3, 3, 3, 3, 2, 3, 8, 3, 8, 9, 3, 8}, //√
     };
 
     private int ActionsRowNumber(Token token) {
@@ -393,7 +454,9 @@ public class Calculator implements ICalculator {
                 case 2:
                     tmps = new double[2];
                     tmps[1] = Double.parseDouble(S.pop().getValue());
-                    tmps[0] = Double.parseDouble(S.pop().getValue());
+                    if (tmp.getValue().charAt(0) != '√') {
+                        tmps[0] = Double.parseDouble(S.pop().getValue());
+                    }
                     switch (tmp.getValue().charAt(0)) {
                         case '+':
                             S.push(new NumberToken(tmps[0] + tmps[1]));
