@@ -2,6 +2,7 @@ package com.project.calculator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity
 
     TextView outView;
     TextView grayOutView;
-    int nob = 0; //number of brakets in outView; if ( then ++nub else if ) then --nub
+    int nob = 0; //number of brakets in outView; if ( then ++nub else if ) then --nubZ
     boolean isAnswered = false;
 
     Calculator calculator = new Calculator();
@@ -84,28 +85,22 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        buttonsPrograms = new HashMap();
-
-        buttonShelf = (LinearLayout)findViewById(R.id.button_shelf);
-
-        compiler = new UserProgramCompiler();
-
-        outView = (TextView) findViewById(R.id.main_output_view);
+        grayOutView.setMovementMethod(new ScrollingMovementMethod());
         grayOutView = (TextView) findViewById(R.id.additional_output_view);
-        outView.setText("");
-        grayOutView.setText("");
-
+        buttonsPrograms = new HashMap();
+        buttonShelf = (LinearLayout)findViewById(R.id.button_shelf);
+        compiler = new UserProgramCompiler();
+        outView = (TextView) findViewById(R.id.main_output_view);
         Button magicButton = (Button)findViewById(R.id.new_button);
         View.OnClickListener clickHandler = new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
                 String name;
                 CreateButtonWindow window = new CreateButtonWindow();
                 window.show(getFragmentManager(), "enterbuttonname");
             }
         };
         magicButton.setOnClickListener(clickHandler);
+
     }
 
     @Override
@@ -133,11 +128,32 @@ public class MainActivity extends AppCompatActivity
     public void onClickStart(View v) {
         //Toast.makeText(this, ((Button)v).getText(), Toast.LENGTH_SHORT).show();
 
+        outView = (TextView) findViewById(R.id.main_output_view);
+        grayOutView = (TextView) findViewById(R.id.additional_output_view);
+
         if (isAnswered) {
-            grayOutView.setText(outView.getText());
-            outView.setText("");
+            if (v.getId() == R.id.buttonC) {
+                grayOutView.setText(outView.getText());
+            }
+            else if (v.getId() == R.id.buttondelete) {
+                outView.setText("");
+            }
+            else if (v.getId() == R.id.buttonbrakets || v.getId() == R.id.button7 ||
+                    v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
+                    v.getId() == R.id.button4 || v.getId() == R.id.button5 ||
+                    v.getId() == R.id.button6 || v.getId() == R.id.button1 ||
+                    v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
+                    v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе ||
+                    v.getId() == R.id.button0 || v.getId() == R.id.buttondot ||
+                    v.getId() == R.id.buttonsqrt || v.getId() == R.id.buttonsin ||
+                    v.getId() == R.id.buttoncos || v.getId() == R.id.buttontan ||
+                    v.getId() == R.id.buttonln) {
+                grayOutView.setText(outView.getText());
+                outView.setText("");
+            }
             isAnswered = false;
         }
+
         if (v.getId() == R.id.buttonC) {
             outView.setText("");
         }
@@ -150,27 +166,32 @@ public class MainActivity extends AppCompatActivity
         }
         else if (v.getId() == R.id.buttonbrakets){
             char lastCh = outView.getText().charAt(outView.getText().length() - 1);
-            if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' || lastCh == '%' ||
-                    lastCh == '(' || lastCh == '^' || lastCh == '√' || (lastCh >= '0' && lastCh <=
-                    '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е') && nob != 0) {
+            if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' ||
+                    lastCh == '%' || lastCh == '(' || lastCh == '^' || lastCh == '√' ||
+                    (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е')
+                    && nob != 0) {
                 outView.setText((String)(outView.getText() + "("));
             } else if (lastCh == ')'){
                 outView.setText((String)(outView.getText() + "*("));
-            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е') {
+            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == '.' ||
+                    lastCh == 'π' || lastCh == 'е') {
                 outView.setText((String)(outView.getText() + ")"));
             }
         }
-        else if (v.getId() == R.id.buttonmod || v.getId() == R.id.buttondiv || v.getId() ==
-                R.id.buttonsqrt || v.getId() == R.id.buttonmul || v.getId() == R.id.button7 ||
-                v.getId() == R.id.button8 || v.getId() == R.id.button9 || v.getId() ==
-                R.id.buttonsub || v.getId() == R.id.button4 || v.getId() == R.id.button5 ||
-                v.getId() == R.id.button6 || v.getId() == R.id.buttonadd || v.getId() ==
-                R.id.button1 || v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
-                v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе || v.getId() == R.id.button0
-                || v.getId() == R.id.buttdot) {
+        else if (v.getId() == R.id.buttonmod || v.getId() == R.id.buttondiv ||
+                v.getId() == R.id.buttonmul || v.getId() == R.id.button7 ||
+                v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
+                v.getId() == R.id.buttonsub || v.getId() == R.id.button4 ||
+                v.getId() == R.id.button5 || v.getId() == R.id.button6 ||
+                v.getId() == R.id.buttonadd || v.getId() == R.id.button1 ||
+                v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
+                v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе ||
+                v.getId() == R.id.button0 || v.getId() == R.id.buttondot) {
             outView.setText(outView.getText().toString() + ((Button)v).getText().toString());
         }
-        else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos || v.getId() == R.id.buttontan || v.getId() == R.id.buttonln) {
+        else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos ||
+                v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
+                v.getId() == R.id.buttonsqrt ) {
             outView.setText((String)((String)(outView.getText()) + (String)(((Button)v).getText()) + "("));
         }
         else if (v.getId() == R.id.buttonpow2) {
@@ -181,14 +202,19 @@ public class MainActivity extends AppCompatActivity
         }
         else if (v.getId() == R.id.buttoncalc){
             grayOutView.setText(outView.getText());
-            isAnswered = true;
             try {
-                double result = calculator.calc((String)outView.getText(), variableMap, functionMap);
-                if (result - (int) result != 0.0) {
-                    outView.setText(String.valueOf(result));
-                }
-                else {
-                    outView.setText(String.valueOf((int) result));
+                double result;
+                isAnswered = true;
+                if (!((String) outView.getText()).isEmpty()) {
+                    result = calculator.calc((String) outView.getText(), variableMap, functionMap);
+                    if (result - (int) result != 0.0) {
+                        outView.setText(String.valueOf(result));
+                    }
+                    else {
+                        outView.setText(String.valueOf((int) result));
+                    }
+                } else {
+                    grayOutView.setText(outView.getText());
                 }
             } catch(Exception e) {
                 outView.setText((String)("Ошибка: " + e.getMessage()));
