@@ -359,7 +359,7 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/buttdot"
+                android:id="@+id/buttondot"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:background="@android:color/background_dark"

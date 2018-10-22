@@ -84,17 +84,21 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
+
+        outView = (TextView) findViewById(R.id.main_output_view);
+        grayOutView = (TextView) findViewById(R.id.additional_output_view);
+
         grayOutView.setMovementMethod(new ScrollingMovementMethod());
         grayOutView = (TextView) findViewById(R.id.additional_output_view);
-        buttonsPrograms = new HashMap();
         buttonShelf = (LinearLayout)findViewById(R.id.button_shelf);
         compiler = new UserProgramCompiler();
         outView = (TextView) findViewById(R.id.main_output_view);
         Button magicButton = (Button)findViewById(R.id.new_button);
         View.OnClickListener clickHandler = new View.OnClickListener() {
             @Override
-                String name;
+            public void onClick(View v) {
                 CreateButtonWindow window = new CreateButtonWindow();
                 window.show(getFragmentManager(), "enterbuttonname");
             }
@@ -127,9 +131,6 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickStart(View v) {
         //Toast.makeText(this, ((Button)v).getText(), Toast.LENGTH_SHORT).show();
-
-        outView = (TextView) findViewById(R.id.main_output_view);
-        grayOutView = (TextView) findViewById(R.id.additional_output_view);
 
         if (isAnswered) {
             if (v.getId() == R.id.buttonC) {
@@ -187,12 +188,12 @@ public class MainActivity extends AppCompatActivity
                 v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
                 v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе ||
                 v.getId() == R.id.button0 || v.getId() == R.id.buttondot) {
-            outView.setText(outView.getText().toString() + ((Button)v).getText().toString());
+            outView.setText((outView.getText().toString() + ((Button)v).getText().toString()));
         }
         else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos ||
                 v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
                 v.getId() == R.id.buttonsqrt ) {
-            outView.setText((String)((String)(outView.getText()) + (String)(((Button)v).getText()) + "("));
+            outView.setText((String)((outView.getText().toString() + ((Button)v).getText().toString()) + "("));
         }
         else if (v.getId() == R.id.buttonpow2) {
             outView.setText((String)(outView.getText() + "^2"));
@@ -205,8 +206,8 @@ public class MainActivity extends AppCompatActivity
             try {
                 double result;
                 isAnswered = true;
-                if (!((String) outView.getText()).isEmpty()) {
-                    result = calculator.calc((String) outView.getText(), variableMap, functionMap);
+                if (outView.getText().length() != 0) {
+                    result = calculator.calc(outView.getText().toString(), variableMap, functionMap);
                     if (result - (int) result != 0.0) {
                         outView.setText(String.valueOf(result));
                     }
