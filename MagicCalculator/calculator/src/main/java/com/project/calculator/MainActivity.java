@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity
 
     TextView outView;
     TextView grayOutView;
-    int nob = 0; //number of brakets in outView; if ( then ++nub else if ) then --nubZ
+    int nob = 0; //number of brackets in outView; if ( then ++nub else if ) then --nubZ
     boolean isAnswered = false;
 
     Calculator calculator = new Calculator();
@@ -166,17 +166,26 @@ public class MainActivity extends AppCompatActivity
             }
         }
         else if (v.getId() == R.id.buttonbrakets){
-            char lastCh = outView.getText().charAt(outView.getText().length() - 1);
+            char lastCh;
+            if (outView.getText().length() != 0) {
+                lastCh = outView.getText().charAt(outView.getText().length() - 1);
+            } else {
+                lastCh = '(';
+            }
             if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' ||
                     lastCh == '%' || lastCh == '(' || lastCh == '^' || lastCh == '√' ||
                     (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е')
-                    && nob != 0) {
-                outView.setText((String)(outView.getText() + "("));
-            } else if (lastCh == ')'){
-                outView.setText((String)(outView.getText() + "*("));
-            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == '.' ||
-                    lastCh == 'π' || lastCh == 'е') {
+                    && nob == 0) {
+                outView.setText((String) (outView.getText() + "("));
+                ++nob;
+            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е') {
                 outView.setText((String)(outView.getText() + ")"));
+                --nob;
+            } else if (lastCh == ')' && nob == 0) {
+                outView.setText((String) (outView.getText() + "*("));
+            } else if (lastCh == ')') {
+                outView.setText((String) (outView.getText() + ")"));
+                --nob;
             }
         }
         else if (v.getId() == R.id.buttonmod || v.getId() == R.id.buttondiv ||
@@ -194,6 +203,7 @@ public class MainActivity extends AppCompatActivity
                 v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
                 v.getId() == R.id.buttonsqrt ) {
             outView.setText((String)((outView.getText().toString() + ((Button)v).getText().toString()) + "("));
+            ++nob;
         }
         else if (v.getId() == R.id.buttonpow2) {
             outView.setText((String)(outView.getText() + "^2"));
