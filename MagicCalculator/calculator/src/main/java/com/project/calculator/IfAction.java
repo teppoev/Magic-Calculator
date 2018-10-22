@@ -23,6 +23,14 @@ public class IfAction extends ActionWithBody {
         Variable left = this.GetLocalVariable(leftName);
         Variable right = this.GetLocalVariable(rightName);
 
+        if(left == null && UserProgramCompiler.TokenType.GetTypeOf(leftName) ==  UserProgramCompiler.TokenType.NumToken) {
+            left = new Variable(Double.parseDouble(leftName));
+        }
+        if(right == null && UserProgramCompiler.TokenType.GetTypeOf(rightName) ==  UserProgramCompiler.TokenType.NumToken) {
+            right = new Variable(Double.parseDouble(rightName));
+        }
+
+
         double conditionValue = cmp.Calculate(new double[] {left.getValue(), right.getValue()});
         if(conditionValue == 1.0) {
             for(IAction action: actions) {

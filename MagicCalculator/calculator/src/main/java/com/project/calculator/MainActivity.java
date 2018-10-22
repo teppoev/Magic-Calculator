@@ -31,11 +31,9 @@ public class MainActivity extends AppCompatActivity
     private int buttonCounter = 0;
     private UserProgramCompiler compiler;
 
-    private Map<String, IFunction> buttonsPrograms;
-
     private void CreatingButton(String name, String body) {
 
-        if (!buttonsPrograms.containsKey(name)) {
+        if (!functionMap.containsKey(name)) {
 
             final Button newButton = new Button(MainActivity.this);
             newButton.setText(name);
@@ -50,7 +48,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v) {
                     String name = ((Button)v).getText().toString();
-                    IFunction function = buttonsPrograms.get(name);
+                    IFunction function = functionMap.get(name);
                     if(function != null) {
                         outView.append(name + "(");
                     }
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity
             buttonCounter++;
             buttonShelf.addView(newButton);
 
-            buttonsPrograms.put(name, function);
+            functionMap.put(name, function);
         }
         else {
             //...
@@ -159,7 +157,7 @@ public class MainActivity extends AppCompatActivity
             outView.setText("");
         }
         else if (v.getId() == R.id.buttondelete){
-            if (!((String) outView.getText()).isEmpty()) {
+            if (outView.getText().toString().length() != 0) {
                 outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
             } else {
                 outView.setText("");
