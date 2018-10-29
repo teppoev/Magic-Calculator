@@ -232,6 +232,16 @@ public class Calculator implements ICalculator {
                     else {
                         throw new IOException("Ошибка ввода 4 " + ch  + " " + tmp + " " + lastCh);
                     }
+                    isNotVariable = true;
+                    tokens.add(forAdd);
+                    tmp = "";
+                    forAdd = new OperationToken(ch);
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
                 }
                 else if (lastCh == ')')
                 {
