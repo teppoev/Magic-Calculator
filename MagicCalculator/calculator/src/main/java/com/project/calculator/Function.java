@@ -51,6 +51,11 @@ public class Function implements IFunction {
         }
 
         main.Do();
-        return result.getValue();
+
+        double answer = result.getValue();
+
+        result.setValue(0.0);
+
+        return answer;
     }
 }
