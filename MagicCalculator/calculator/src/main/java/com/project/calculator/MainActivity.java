@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity
                         if (outView.getText().length() != 0) {
                             lastCh = outView.getText().charAt(outView.getText().length() - 1);
                             if (lastCh == '.') {
-                                outView.append("0");
+                                outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                                 isStarted = false;
                             }
                         }
