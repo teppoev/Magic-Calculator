@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity
     TextView outView;
     TextView grayOutView;
     int nob = 0; //number of brackets in outView; if ( then ++nub else if ) then --nubZ
+    boolean isStarted = false;
     boolean isAnswered = false;
 
     Calculator calculator = new Calculator();
@@ -54,6 +55,14 @@ public class MainActivity extends AppCompatActivity
                             grayOutView.setText(outView.getText());
                             outView.setText("");
                             isAnswered = false;
+                        }
+                        char lastCh;
+                        if (outView.getText().length() != 0) {
+                            lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                            if (lastCh == '.') {
+                                outView.append("0");
+                                isStarted = false;
+                            }
                         }
                         outView.append(name + "(");
                         ++nob;
@@ -169,6 +178,7 @@ public class MainActivity extends AppCompatActivity
                 lastCh = outView.getText().charAt(outView.getText().length() - 1);
                 if (lastCh == '(') --nob;
                 else if (lastCh == ')') ++nob;
+                else if (lastCh == '.') isStarted = false;
                 outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
             } else {
                 outView.setText("");
@@ -187,7 +197,13 @@ public class MainActivity extends AppCompatActivity
                     && nob == 0) {
                 outView.setText((String) (outView.getText() + "("));
                 ++nob;
-            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е') {
+            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == 'π' || lastCh == 'е') {
+                isStarted = false;
+                outView.setText((String)(outView.getText() + ")"));
+                --nob;
+            } else if (lastCh == '.') {
+                outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                isStarted = false;
                 outView.setText((String)(outView.getText() + ")"));
                 --nob;
             } else if (lastCh == ')' && nob == 0) {
@@ -197,43 +213,103 @@ public class MainActivity extends AppCompatActivity
                 --nob;
             }
         }
-        else if (v.getId() == R.id.buttonmod || v.getId() == R.id.buttondiv ||
-                v.getId() == R.id.buttonmul || v.getId() == R.id.button7 ||
-                v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
-                v.getId() == R.id.buttonsub || v.getId() == R.id.button4 ||
-                v.getId() == R.id.button5 || v.getId() == R.id.button6 ||
-                v.getId() == R.id.buttonadd || v.getId() == R.id.button1 ||
-                v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
-                v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе ||
-                v.getId() == R.id.button0 || v.getId() == R.id.buttondot) {
+        else if (v.getId() == R.id.button7 || v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
+                v.getId() == R.id.button4 || v.getId() == R.id.button5 || v.getId() == R.id.button6 ||
+                v.getId() == R.id.button1 || v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
+                v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе || v.getId() == R.id.button0)
+        {
             outView.setText((outView.getText().toString() + ((Button)v).getText().toString()));
+        }
+        else if (v.getId() == R.id.buttonmod || v.getId() == R.id.buttondiv ||
+                v.getId() == R.id.buttonmul || v.getId() == R.id.buttonsub ||
+                v.getId() == R.id.buttonadd || v.getId() == R.id.buttonpowy ||
+                v.getId() == R.id.buttonpow2) {
+            char lastCh;
+            if (outView.getText().length() != 0) {
+                isStarted = false;
+                lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                if (lastCh == '%' || lastCh == '/' || lastCh == '*' || lastCh == '+' || lastCh == '^' || lastCh == '-'){
+                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                }
+                else if (lastCh == '.') {
+                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                }
+                if (outView.getText().length() != 0) {
+                    if (v.getId() != R.id.buttonpowy && v.getId() != R.id.buttonpow2) {
+                        outView.append(((Button) v).getText().toString());
+                    } else {
+                        outView.append("^");
+                    }
+                    if (v.getId() == R.id.buttonpow2) {
+                        outView.append("2");
+                    }
+                }
+            } else if (v.getId() == R.id.buttonsub) {
+                outView.append("-");
+            }
+        }
+        else if (v.getId() == R.id.buttondot && !isStarted) {
+            char lastCh;
+            if (outView.getText().length() != 0) {
+                lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                if (lastCh >= '0' && lastCh <= '9'){
+                    outView.append(".");
+                }
+                else {
+                    outView.append("0.");
+                }
+            } else {
+                outView.append("0.");
+            }
+            isStarted = true;
         }
         else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos ||
                 v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
                 v.getId() == R.id.buttonsqrt ) {
+            char lastCh;
+            if (outView.getText().length() != 0) {
+                lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                if (lastCh == '.') {
+                    outView.append("0");
+                }
+            }
+            isStarted = false;
             outView.setText((String)((outView.getText().toString() + ((Button)v).getText().toString()) + "("));
             ++nob;
         }
-        else if (v.getId() == R.id.buttonpow2) {
-            outView.setText((String)(outView.getText() + "^2"));
-        }
-        else if (v.getId() == R.id.buttonpowy) {
-            outView.setText((String)(outView.getText() + "^"));
-        }
         else if (v.getId() == R.id.buttoncalc){
-            grayOutView.setText(outView.getText());
             try {
                 double result;
                 isAnswered = true;
+                isStarted = false;
                 if (outView.getText().length() != 0) {
-                    result = calculator.calc(outView.getText().toString(), variableMap, functionMap);
-                    if (result - (int) result != 0.0) {
-                        outView.setText(String.valueOf(result));
+                    char lastCh;
+                    lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                    while (!(lastCh >= '0' && lastCh <= '9') && !(lastCh == '.') && !(lastCh >= 'a' && lastCh <= 'z') && !(lastCh == '_') && !(lastCh == ')')){
+                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        if (lastCh == '(') --nob;
+                        if (outView.getText().length() != 0) {
+                            lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        } else break;
                     }
-                    else {
-                        outView.setText(String.valueOf((int) result));
+                    while (nob > 0) {
+                        outView.append(")");
+                        --nob;
                     }
-                } else {
+                    if (lastCh == '.') {
+                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                    }
+                    grayOutView.setText(outView.getText());
+                    if (outView.getText().length() != 0) {
+                        result = calculator.calc(outView.getText().toString(), variableMap, functionMap);
+                        if (result - (int) result != 0.0) {
+                            outView.setText(String.valueOf(result));
+                        } else {
+                            outView.setText(String.valueOf((int) result));
+                        }
+                    }
+                }
+                else {
                     grayOutView.setText(outView.getText());
                 }
             } catch(Exception e) {

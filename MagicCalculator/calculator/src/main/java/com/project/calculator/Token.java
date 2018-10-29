@@ -65,10 +65,18 @@ class EmptyToken extends Token{
         return 5; }
 }
 
-class CommaToken extends  Token{
-    public CommaToken() {}
+class BinaryToken extends Token{
+    private char[] value;
+    BinaryToken(String _value) {
+        value[0] = _value.charAt(0);
+        if (_value.length() == 2) {
+            value[1] = _value.charAt(1);
+        }
+    }
     public String getValue() {
-        return ","; }
+        return String.valueOf(value);
+    }
     public int getType() {
-        return 6; }
+        return 6;
+    }
 }
