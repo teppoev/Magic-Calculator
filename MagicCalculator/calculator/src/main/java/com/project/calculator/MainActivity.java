@@ -1,28 +1,35 @@
 package com.project.calculator;
 
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements CreateButtonWindow.CreateButtonWindowListener{
 
     TextView outView;
     TextView grayOutView;
+    HorizontalScrollView myScroll, myGrayScroll;
+    Button dotButton;
     int nob = 0; //number of brackets in outView; if ( then ++nub else if ) then --nubZ
     boolean isStarted = false;
     boolean isAnswered = false;
+    boolean isError = false;
+    boolean isContextMenu = false;
 
     Calculator calculator = new Calculator();
     HashMap<String,Variable> variableMap = new HashMap<String, Variable>();
@@ -53,7 +60,9 @@ public class MainActivity extends AppCompatActivity
                     if(function != null) {
                         if (isAnswered) {
                             grayOutView.setText(outView.getText());
+                            myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                             outView.setText("");
+                            myScroll.scrollTo(outView.getRight(), 0);
                             isAnswered = false;
                         }
                         char lastCh;
@@ -99,6 +108,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        myScroll = (HorizontalScrollView) findViewById(R.id.scroll_main_out_view);
+        myGrayScroll = (HorizontalScrollView) findViewById(R.id.scroll_add_out_view);
+        dotButton = (Button) findViewById(R.id.buttondot);
+        registerForContextMenu(dotButton);
 
         outView = (TextView) findViewById(R.id.main_output_view);
         grayOutView = (TextView) findViewById(R.id.additional_output_view);
@@ -118,6 +131,38 @@ public class MainActivity extends AppCompatActivity
         };
         magicButton.setOnClickListener(clickHandler);
 
+    }
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        switch (v.getId()) {
+            case R.id.buttondot:
+                isContextMenu = true;
+                if (isAnswered) {
+                    grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    outView.setText("");
+                    myScroll.scrollTo(outView.getRight(), 0);
+                    isAnswered = false;
+                } else if (!isError) {
+                    char lastCh;
+                    if (outView.getText().toString().length() != 0) {
+                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        if (lastCh == ')' || lastCh >= 'a' && lastCh <= 'z' ||
+                                lastCh >= 'A' && lastCh <= 'Z' ||
+                                lastCh >= '0' && lastCh <= '9') {
+                            outView.append(",");
+                            isStarted = false;
+                        } else if (lastCh == '.') {
+                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                            outView.append(",");
+                            isStarted = false;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -148,6 +193,7 @@ public class MainActivity extends AppCompatActivity
         if (isAnswered) {
             if (v.getId() == R.id.buttonC) {
                 grayOutView.setText(outView.getText());
+                myGrayScroll.scrollTo(grayOutView.getRight(), 0);
             }
             else if (v.getId() == R.id.buttondelete) {
                 outView.setText("");
@@ -163,14 +209,27 @@ public class MainActivity extends AppCompatActivity
                     v.getId() == R.id.buttoncos || v.getId() == R.id.buttontan ||
                     v.getId() == R.id.buttonln) {
                 grayOutView.setText(outView.getText());
+                myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                 outView.setText("");
+                myScroll.scrollTo(outView.getRight(), 0);
             }
             isAnswered = false;
+        }
+
+        if (isError) {
+            grayOutView.setText(outView.getText());
+            myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+            outView.setText("");
+            myScroll.scrollTo(outView.getRight(), 0);
+            nob = 0;
+            isError = false;
+            isStarted = false;
         }
 
         if (v.getId() == R.id.buttonC) {
             outView.setText("");
             nob = 0;
+            isStarted = false;
         }
         else if (v.getId() == R.id.buttondelete){
             char lastCh;
@@ -194,22 +253,22 @@ public class MainActivity extends AppCompatActivity
             if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' ||
                     lastCh == '%' || lastCh == '(' || lastCh == '^' || lastCh == '√' ||
                     (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' || lastCh == 'е')
-                    && nob == 0) {
-                outView.setText((String) (outView.getText() + "("));
+                    && nob == 0 || lastCh == ',') {
+                outView.append("(");
                 ++nob;
             } else if (lastCh >= '0' && lastCh <= '9' || lastCh == 'π' || lastCh == 'е') {
                 isStarted = false;
-                outView.setText((String)(outView.getText() + ")"));
+                outView.append(")");
                 --nob;
             } else if (lastCh == '.') {
                 outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                 isStarted = false;
-                outView.setText((String)(outView.getText() + ")"));
+                outView.append(")");
                 --nob;
             } else if (lastCh == ')' && nob == 0) {
-                outView.setText((String) (outView.getText() + "*("));
+                outView.append("*(");
             } else if (lastCh == ')') {
-                outView.setText((String) (outView.getText() + ")"));
+                outView.append(")");
                 --nob;
             }
         }
@@ -228,10 +287,7 @@ public class MainActivity extends AppCompatActivity
             if (outView.getText().length() != 0) {
                 isStarted = false;
                 lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                if (lastCh == '%' || lastCh == '/' || lastCh == '*' || lastCh == '+' || lastCh == '^' || lastCh == '-'){
-                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
-                }
-                else if (lastCh == '.') {
+                if (lastCh == '%' || lastCh == '/' || lastCh == '*' || lastCh == '+' || lastCh == '^' || lastCh == '-' || lastCh == '.' || lastCh == ',' && v.getId() != R.id.buttonsub){
                     outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                 }
                 if (outView.getText().length() != 0) {
@@ -249,19 +305,24 @@ public class MainActivity extends AppCompatActivity
             }
         }
         else if (v.getId() == R.id.buttondot && !isStarted) {
-            char lastCh;
-            if (outView.getText().length() != 0) {
-                lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                if (lastCh >= '0' && lastCh <= '9'){
-                    outView.append(".");
-                }
-                else {
+            if (!isContextMenu) {
+                char lastCh;
+                if (outView.getText().length() != 0) {
+                    lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                    if (lastCh >= '0' && lastCh <= '9'){
+                        outView.append(".");
+                    }
+                    else {
+                        outView.append("0.");
+                    }
+                } else {
                     outView.append("0.");
                 }
-            } else {
-                outView.append("0.");
+                isStarted = true;
             }
-            isStarted = true;
+            else {
+                isContextMenu = false;
+            }
         }
         else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos ||
                 v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
@@ -270,11 +331,11 @@ public class MainActivity extends AppCompatActivity
             if (outView.getText().length() != 0) {
                 lastCh = outView.getText().charAt(outView.getText().length() - 1);
                 if (lastCh == '.') {
-                    outView.append("0");
+                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                 }
             }
             isStarted = false;
-            outView.setText((String)((outView.getText().toString() + ((Button)v).getText().toString()) + "("));
+            outView.append(((Button)v).getText().toString() + "(");
             ++nob;
         }
         else if (v.getId() == R.id.buttoncalc){
@@ -298,22 +359,30 @@ public class MainActivity extends AppCompatActivity
                     }
                     if (lastCh == '.') {
                         outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        myScroll.scrollTo(outView.getRight(), 0);
                     }
                     grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                     if (outView.getText().length() != 0) {
                         result = calculator.calc(outView.getText().toString(), variableMap, functionMap);
-                        if (result - (int) result != 0.0) {
+                        if (result - (int) result != 0.0 || !(result >= -32767.0 && result <= 32767.0)) {
                             outView.setText(String.valueOf(result));
+                            myScroll.scrollTo(outView.getRight(), 0);
                         } else {
                             outView.setText(String.valueOf((int) result));
+                            myScroll.scrollTo(outView.getRight(), 0);
                         }
                     }
                 }
                 else {
                     grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                 }
             } catch(Exception e) {
                 outView.setText((String)("Ошибка: " + e.getMessage()));
+                myScroll.scrollTo(outView.getRight(), 0);
+                isError = true;
+                isAnswered = false;
             }
         }
     }
