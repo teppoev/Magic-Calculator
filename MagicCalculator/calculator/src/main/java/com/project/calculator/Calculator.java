@@ -750,7 +750,8 @@ public class Calculator implements ICalculator {
         }
     }
 
-    private ArrayList<Token> infixToPostfix(ArrayList<Token> intokens) throws BraketsOpenException, BraketsCloseException, BraketsFunctionException, ExtraCommaException{
+    private ArrayList<Token> infixToPostfix(ArrayList<Token> intokens) throws BraketsOpenException,
+            BraketsCloseException, BraketsFunctionException, ExtraCommaException{
         int i = 0; // i is index intokens
         int row, col;
         char action;
@@ -766,9 +767,9 @@ public class Calculator implements ICalculator {
                 case 3: outtokens.add(S.peek()); S.pop(); break;
                 case 4: outtokens.add(new EmptyToken()); break;
                 case 5: S.pop(); ++i; break;
-                case 6: throw new BraketsOpenException("There is no ( for ) in tokens at position " + i);
-                case 7: throw new BraketsOpenException("There is no ) for ( in tokens at position " + i);
-                case 8: throw new BraketsOpenException("There is no ( for ) in tokens at position " + i);
+                case 6: throw new BraketsOpenException(i);
+                case 7: throw new BraketsCloseException(i);
+                case 8: throw new BraketsFunctionException(i);
                 case 9: throw new ExtraCommaException("There is an extra comma in tokens at position " + i);
                 case 10: ++i;
             }
@@ -776,7 +777,7 @@ public class Calculator implements ICalculator {
         return outtokens;
     }
 
-    private double calcPostfix(ArrayList<Token> tokens) throws IncorrectPostfixException{
+    private double calcPostfix(ArrayList<Token> tokens) throws IncorrectPostfixException, ExtraVariableException{
         Stack<Token> S = new Stack<Token>();
         Token tmp;
         double[] tmps;
@@ -841,7 +842,12 @@ public class Calculator implements ICalculator {
                     S.push(new NumberToken(number));
                     break;
                 case 5:
-                    return Double.parseDouble(S.peek().getValue());
+                    if (S.size() == 1){
+                        return Double.parseDouble(S.peek().getValue());
+                    }
+                    else {
+                        throw new ExtraVariableException("There are " + (S.size() - 1) + " extra arguments in Stack");
+                    }
                 case 6:
                     tmps = new double[2];
                     tmps[1] = Double.parseDouble(S.pop().getValue());
@@ -898,28 +904,35 @@ public class Calculator implements ICalculator {
 
     class BraketsOpenException extends Exception{
         public BraketsOpenException(){}
-        BraketsOpenException(String S) {
-            super(S);
+        BraketsOpenException(int i) {
+            super("There is no ( for ) in tokens at position " + i);
         }
     }
 
     class BraketsCloseException extends Exception{
         public BraketsCloseException(){}
-        BraketsCloseException(String S) {
-            super(S);
+        BraketsCloseException(int i) {
+            super("There is no ) for ( in tokens at position " + i);
         }
     }
 
     class BraketsFunctionException extends Exception{
         public BraketsFunctionException(){}
-        BraketsFunctionException(String S) {
-            super(S);
+        BraketsFunctionException(int i) {
+            super("Error with brackets after function in tokens at position " + i);
         }
     }
 
     class ExtraCommaException extends Exception{
         public ExtraCommaException(){}
         ExtraCommaException(String S) {
+            super(S);
+        }
+    }
+
+    class ExtraVariableException extends Exception{
+        public ExtraVariableException(){}
+        ExtraVariableException(String S) {
             super(S);
         }
     }
@@ -932,7 +945,8 @@ public class Calculator implements ICalculator {
     }
 
     public double calc(String string, Map<String, Variable> _variables, Map<String, IFunction> _functions)
-            throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException, ExtraCommaException, IncorrectPostfixException {
+            throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException,
+            ExtraCommaException, IncorrectPostfixException, ExtraVariableException {
         variables = _variables;
         functions = _functions;
         ArrayList<Token> tokens = new ArrayList<Token>();
