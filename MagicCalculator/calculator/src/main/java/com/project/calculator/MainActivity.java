@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity
     private int buttonCounter = 0;
     private UserProgramCompiler compiler;
 
-    private void CreatingButton(String name, String body) {
+    private void CreatingButton(String name, String body, int pNum) {
 
         if (!functionMap.containsKey(name)) {
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
                             TableRow.LayoutParams.WRAP_CONTENT);
 
 
-            IFunction function = compiler.Compile(body, 1);
+            IFunction function = compiler.Compile(body, pNum);
             newButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onDialogPositiveClick(CreateButtonWindow dialog) {
-        CreatingButton(dialog.GetText(), dialog.GetBody());
+        CreatingButton(dialog.GetText(), dialog.GetBody(), dialog.GetParamNum());
     }
 
     @Override

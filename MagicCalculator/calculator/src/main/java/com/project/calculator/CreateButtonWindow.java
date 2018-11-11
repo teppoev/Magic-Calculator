@@ -4,19 +4,30 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.text.ParseException;
 
 public class CreateButtonWindow extends DialogFragment {
 
     private EditText text;
     private EditText body;
+    private Spinner paramNum;
 
     private TextWatcher textWatcher;
 
@@ -88,8 +99,6 @@ public class CreateButtonWindow extends DialogFragment {
         return shift;
     }
 
-    boolean readyToClose = false;
-
     private void ShowErrorMessage(String text) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Error")
@@ -103,6 +112,17 @@ public class CreateButtonWindow extends DialogFragment {
                 .show();
     }
 
+    private void InitParamNumberSpinner(int pNum) {
+        String[] data = new String[pNum];
+        for(int i = 0; i < pNum; ++i) {
+            data[i] = Integer.toString(i + 1) + " parameter" + ((i != 0) ? "s" : "");
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.param_number_text, data);
+        paramNum.setAdapter(adapter);
+        paramNum.setPrompt("Func param num");
+        paramNum.setSelection(paramNum.getFirstVisiblePosition());
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -110,6 +130,26 @@ public class CreateButtonWindow extends DialogFragment {
         View view = getActivity().getLayoutInflater().inflate(R.layout.user_program_editor, null);
         text = (EditText) view.findViewById(R.id.function_name);
         body = (EditText) view.findViewById(R.id.function_body);
+        paramNum = (Spinner) view.findViewById(R.id.func_param_num);
+
+        InitParamNumberSpinner(5);
+
+        paramNum.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                Button butCalc = (Button)getActivity().findViewById(R.id.buttoncalc);
+                ColorDrawable butColor = (ColorDrawable)butCalc.getBackground();
+                view.setBackgroundColor(butColor.getColor());
+
+                ((TextView)view).setTextColor(Color.BLACK);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         textWatcher = new TextWatcher() {
             private int lastSize = 0;
@@ -173,6 +213,9 @@ public class CreateButtonWindow extends DialogFragment {
                             return;
                         }
                         try {
+
+                            int pNum = Integer.parseInt(paramNum.getSelectedItem().toString());
+
                             activity = (CreateButtonWindowListener) getActivity();
 
                             activity.onDialogPositiveClick(CreateButtonWindow.this);
@@ -184,6 +227,8 @@ public class CreateButtonWindow extends DialogFragment {
 
                         } catch (Error err) {
                             ShowErrorMessage(err.getMessage());
+                        } catch (android.net.ParseException e) {
+                            ShowErrorMessage("Incorrect number of parameters");
                         }
                     }
                 });
@@ -200,6 +245,11 @@ public class CreateButtonWindow extends DialogFragment {
 
     public String GetBody() {
         return body.getText().toString();
+    }
+
+    public int GetParamNum() {
+        int pNum = Integer.parseInt(paramNum.getSelectedItem().toString());
+        return pNum;
     }
 
 }
