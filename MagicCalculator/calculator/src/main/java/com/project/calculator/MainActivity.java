@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity
                             myScroll.scrollTo(outView.getRight(), 0);
                             isAnswered = false;
                         }
+                        if (isError) {
+                            grayOutView.setText(outView.getText());
+                            myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                            outView.setText("");
+                            myScroll.scrollTo(outView.getRight(), 0);
+                            isError = false;
+                        }
                         char lastCh;
                         if (outView.getText().length() != 0) {
                             lastCh = outView.getText().charAt(outView.getText().length() - 1);
