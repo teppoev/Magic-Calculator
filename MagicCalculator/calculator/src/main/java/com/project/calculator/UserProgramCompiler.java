@@ -21,8 +21,6 @@ public class UserProgramCompiler {
 
     private Map<String, IFunction> functions;
 
-    private IfAction lastIfAction;
-
     enum TokenType {
 
         ForToken,
@@ -90,34 +88,35 @@ public class UserProgramCompiler {
         actionsStack.add(main);
 
         String[] lines = program.split("\n");
-        for(String line: lines) {
+        for(int i = 0; i < lines.length; i++) {
+            String line = lines[i];
             int level = GetNestingLevel(line);
             List<Token> tokenLine = TokenizeLine(line);
 
-            line.substring(level);
+            line.substring(level - 1);
 
+            IfAction lastIfAction = null;
             if(level > currentNestingLevel) {
                 ActionWithBody action = new SimpleBodyAction();
                 action.SetParent(actionsStack.peek());
+                action.SetLineNumber(i + 1);
                 actionsStack.add(action);
                 currentNestingLevel++;
             }
             else {
                 Log.d("MyTag", "Compile: current level is " + Integer.toString(level) + " " + line);
                 while(level < currentNestingLevel) {
-                    try {
-                        IfAction ifAction = (IfAction) actionsStack.pop();
-                        lastIfAction = ifAction;
+                    if(actionsStack.peek().getClass() == IfAction.class) {
+                        lastIfAction = (IfAction) actionsStack.pop();
                     }
-                    catch (ClassCastException e) {
-
+                    else {
+                        lastIfAction = null;
                     }
                     currentNestingLevel--;
                 }
             }
 
-            CompileTokenLine(tokenLine);
-                lastIfAction = null;
+            CompileTokenLine(tokenLine, i + 1, lastIfAction);
         }
 
         return new Function(argNum, main);
@@ -125,7 +124,7 @@ public class UserProgramCompiler {
 
     private int GetNestingLevel(String line) {
         int level;
-        line = line.replaceAll("    ", "\t");
+        line = line.replaceAll("  ", "\t");
         for(level = 0; level < line.length() && line.charAt(level) == '\t'; level++) {
         }
         return level + 1;
@@ -209,36 +208,46 @@ public class UserProgramCompiler {
 
     private int currentNestingLevel = 1;
 
-    private void CompileTokenLine(List<Token> line) {
+    private String CreateErrorMessage(String message, int lineNumber) {
+        return "Line " + Integer.toString(lineNumber) + ": " + message;
+    }
+
+    private void CompileTokenLine(List<Token> line, int lineNum, IfAction lastIfAction)
+        throws Error
+    {
         ListIterator<Token> iter = line.listIterator();
+        if(!iter.hasNext()) {
+            return;
+        }
         Token t = iter.next();
 
         if (t.GetType() == TokenType.ForToken) {
             // for <varName> in <varName/value>...<varName/value>
             if (line.size() != 6) {
-                throw new Error("Bad number of tokens in for");
+                throw new Error(CreateErrorMessage("Bad number of tokens in for", lineNum));
             }
             Token varName = iter.next();
             if (varName.GetType() != TokenType.VarToken) {
-                throw new Error("Bad for iterator name");
+                throw new Error(CreateErrorMessage("Bad for iterator name", lineNum));
             }
             if (iter.next().GetType() != TokenType.InToken) {
-                throw new Error("Bad structure of for");
+                throw new Error(CreateErrorMessage("Bad structure of for", lineNum));
             }
             Token left = iter.next();
             if (left.GetType() != TokenType.VarToken && left.GetType() != TokenType.NumToken) {
-                throw new Error("bad structure of range");
+                throw new Error(CreateErrorMessage("bad structure of range", lineNum));
             }
             if (iter.next().GetType() != TokenType.RangeToken) {
-                throw new Error("bad structure of range");
+                throw new Error(CreateErrorMessage("bad structure of range", lineNum));
             }
             Token right = iter.next();
             if (right.GetType() != TokenType.VarToken && right.GetType() != TokenType.NumToken) {
-                throw new Error("bad structure of range");
+                throw new Error(CreateErrorMessage("bad structure of range", lineNum));
             }
 
             ForAction action = new ForAction(left.GetWord(), right.GetWord(), varName.GetWord());
             action.SetParent(actionsStack.peek());
+            action.SetLineNumber(lineNum);
             actionsStack.peek().AddAction(action);
             actionsStack.add(action);
             currentNestingLevel++;
@@ -246,23 +255,24 @@ public class UserProgramCompiler {
         if (t.GetType() == TokenType.IfToken) {
             // if <varName/value> </>/= <varName/value>
             if (line.size() != 4) {
-                throw new Error("Bad number of tokens in if");
+                throw new Error(CreateErrorMessage("Bad number of tokens in if", lineNum));
             }
             Token left = iter.next();
             if (left.GetType() != TokenType.VarToken && left.GetType() != TokenType.NumToken) {
-                throw new Error("Expected number of var as left operand");
+                throw new Error(CreateErrorMessage("Expected number of var as left operand", lineNum));
             }
             Token operand = iter.next();
             if (operand.GetType() != TokenType.CompareToken && operand.GetType() != TokenType.EqualToken) {
-                throw new Error("Expected compare token after left operand");
+                throw new Error(CreateErrorMessage("Expected compare token after left operand", lineNum));
             }
             Token right = iter.next();
             if (right.GetType() != TokenType.VarToken && right.GetType() != TokenType.NumToken) {
-                throw new Error("Expected number of var as right operand");
+                throw new Error(CreateErrorMessage("Expected number of var as right operand", lineNum));
             }
 
             ActionWithBody ifAction = new IfAction(left.GetWord(), right.GetWord(), GetCmp(operand));
             ifAction.SetParent(actionsStack.peek());
+            ifAction.SetLineNumber(lineNum);
             actionsStack.peek().AddAction(ifAction);
 
             actionsStack.add(ifAction);
@@ -271,25 +281,27 @@ public class UserProgramCompiler {
 
         if(t.GetType() == TokenType.NewToken) {
             if (line.size() < 2) {
-                throw new Error("Expected var name");
+                throw new Error(CreateErrorMessage("Expected var name", lineNum));
             }
             Token varName = iter.next();
             if (varName.GetType() != TokenType.VarToken) {
-                throw new Error("Expected var name");
+                throw new Error(CreateErrorMessage("Expected var name", lineNum));
             }
             NewAction action = new NewAction(varName.GetWord());
+            action.SetLineNumber(lineNum);
             action.SetParent(actionsStack.peek());
             actionsStack.peek().AddAction(action);
         }
         if(t.GetType() == TokenType.VarToken) {
             // <varName> = <expression>
             if(line.size() < 3) {
-                throw new Error("Assignment action is too short");
+                throw new Error(CreateErrorMessage("Assignment action is too short", lineNum));
             }
             Token variable = t;
             Token equalSign = iter.next();
             if(equalSign.GetType() != TokenType.EqualToken) {
-                throw new Error("Expected equal sign, met " + equalSign.GetWord() + " type: " + equalSign.GetType().toString());
+                throw new Error(CreateErrorMessage("Expected equal sign, met " +
+                        equalSign.GetWord() + " type: " + equalSign.GetType().toString(), lineNum));
             }
             String expression = "";
             while(iter.hasNext()) {
@@ -298,34 +310,34 @@ public class UserProgramCompiler {
                         currToken.GetType() != TokenType.NumToken &&
                         currToken.GetType() != TokenType.VarToken)
                 {
-                    throw new Error("Expected math operand or numbers or variable names");
+                    throw new Error(CreateErrorMessage("Expected math operand or numbers or variable names", lineNum));
                 }
                 expression = expression + currToken.GetWord();
             }
             if(expression.isEmpty()) {
-                throw new Error("Empty expression");
+                throw new Error(CreateErrorMessage("Empty expression", lineNum));
             }
             Action action = new AssignmentAction(variable.GetWord(), expression, functions);
             action.SetParent(actionsStack.peek());
+            action.SetLineNumber(lineNum);
             actionsStack.peek().AddAction(action);
         }
         if(t.GetType() == TokenType.ElseToken) {
             if(line.size() != 1) {
-                throw new Error("Incorrect else");
+                throw new Error(CreateErrorMessage("Incorrect else", lineNum));
             }
-            try {
+            if(lastIfAction != null) {
                 ActionWithBody elseAction = new SimpleBodyAction();
                 elseAction.SetParent(lastIfAction.GetParent());
-
+                elseAction.SetLineNumber(lineNum);
                 lastIfAction.SetElseAction(elseAction);
 
                 actionsStack.add(elseAction);
 
-
                 currentNestingLevel++;
             }
-            catch (ClassCastException e) {
-                throw new Error("There was no if before else");
+            else {
+                throw new Error(CreateErrorMessage("There was no if before else", lineNum));
             }
         }
     }

@@ -20,7 +20,7 @@ public class Function implements IFunction {
         variables = new Variable[numberOfVariables];
         for(int i = 0; i < numberOfVariables; i++) {
             variables[i] = new Variable(0.0);
-            String name = "arg" + (char)('a' + i);
+            String name = "arg" + Integer.toString(i + 1);
 
             Log.d("MyTag", name);
 
@@ -51,6 +51,11 @@ public class Function implements IFunction {
         }
 
         main.Do();
-        return result.getValue();
+
+        double answer = result.getValue();
+
+        result.setValue(0.0);
+
+        return answer;
     }
 }
