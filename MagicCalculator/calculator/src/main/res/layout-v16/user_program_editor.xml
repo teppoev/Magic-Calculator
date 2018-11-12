@@ -2,10 +2,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/background_dark"
-    android:gravity="right"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:textSize="16sp"
-    android:textColor="@android:color/darker_gray">
+    android:textColor="@android:color/darker_gray"
+    android:textSize="16sp">
 
     <EditText
         android:id="@+id/function_name"
@@ -15,8 +15,9 @@
         android:hint="Name"
         android:inputType="textShortMessage"
         android:textColor="@android:color/darker_gray"
+        android:textColorHint="@android:color/darker_gray"
         android:textSize="20sp"
-        android:textColorHint="@android:color/darker_gray"></EditText>
+        android:gravity="center"></EditText>
 
     <Spinner
         android:id="@+id/func_param_num"
@@ -36,8 +37,8 @@
         android:gravity="top"
         android:hint="Body"
         android:inputType="textMultiLine"
-        android:textColorHint="@android:color/darker_gray"
-        android:typeface="monospace"
         android:textColor="@android:color/darker_gray"
-        android:textSize="20sp"></EditText>
+        android:textColorHint="@android:color/darker_gray"
+        android:textSize="20sp"
+        android:typeface="monospace"></EditText>
 </LinearLayout>

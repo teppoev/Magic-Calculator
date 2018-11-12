@@ -490,13 +490,13 @@
         <HorizontalScrollView
             android:id="@+id/scroll_add_out_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/linear_layout_add_out_view"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="fill|end"
                 android:orientation="horizontal">
 
@@ -515,13 +515,13 @@
         <HorizontalScrollView
             android:id="@+id/scroll_main_out_view"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
+            android:layout_height="wrap_content"
             android:fillViewport="true">
 
             <LinearLayout
                 android:id="@+id/linear_layout_main_out_view"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="fill|end"
                 android:orientation="horizontal">
 

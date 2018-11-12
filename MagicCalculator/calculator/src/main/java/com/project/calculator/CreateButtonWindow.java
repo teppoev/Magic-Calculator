@@ -128,9 +128,9 @@ public class CreateButtonWindow extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.user_program_editor, null);
-        text = (EditText) view.findViewById(R.id.function_name);
-        body = (EditText) view.findViewById(R.id.function_body);
-        paramNum = (Spinner) view.findViewById(R.id.func_param_num);
+        text = view.findViewById(R.id.function_name);
+        body = view.findViewById(R.id.function_body);
+        paramNum = view.findViewById(R.id.func_param_num);
 
         InitParamNumberSpinner(5);
 
@@ -138,7 +138,7 @@ public class CreateButtonWindow extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                Button butCalc = (Button)getActivity().findViewById(R.id.buttoncalc);
+                Button butCalc = getActivity().findViewById(R.id.buttoncalc);
                 ColorDrawable butColor = (ColorDrawable)butCalc.getBackground();
                 view.setBackgroundColor(butColor.getColor());
 
@@ -202,7 +202,7 @@ public class CreateButtonWindow extends DialogFragment {
             @Override
             public void onShow(DialogInterface dialog) {
                 Button posButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                final EditText editText = (EditText) ((AlertDialog) dialog).findViewById(R.id.function_name);
+                final EditText editText = ((AlertDialog) dialog).findViewById(R.id.function_name);
 
                 posButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -213,9 +213,6 @@ public class CreateButtonWindow extends DialogFragment {
                             return;
                         }
                         try {
-
-                            int pNum = Integer.parseInt(paramNum.getSelectedItem().toString());
-
                             activity = (CreateButtonWindowListener) getActivity();
 
                             activity.onDialogPositiveClick(CreateButtonWindow.this);
@@ -248,7 +245,7 @@ public class CreateButtonWindow extends DialogFragment {
     }
 
     public int GetParamNum() {
-        int pNum = Integer.parseInt(paramNum.getSelectedItem().toString());
+        int pNum = paramNum.getSelectedItemPosition() + 1;
         return pNum;
     }
 
