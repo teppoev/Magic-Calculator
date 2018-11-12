@@ -23,11 +23,13 @@ import android.widget.TextView;
 
 import java.text.ParseException;
 
+// this class is dialog for creating a program-button
 public class CreateButtonWindow extends DialogFragment {
 
     private EditText text;
     private EditText body;
     private Spinner paramNum;
+    private UserProgramCompiler compiler;
 
     private TextWatcher textWatcher;
 
@@ -173,7 +175,6 @@ public class CreateButtonWindow extends DialogFragment {
 
                 body.setSelection(newPos);
             }
-
         };
 
         body.addTextChangedListener(textWatcher);
@@ -181,6 +182,8 @@ public class CreateButtonWindow extends DialogFragment {
         builder.setView(view);
 
         builder.setMessage("Enter button name")
+                // we'll add the pos click listener below
+                // now it's null
         .setPositiveButton("OK", null)
         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
@@ -196,32 +199,37 @@ public class CreateButtonWindow extends DialogFragment {
                 }
             }
         });
-        Dialog dialog = builder.create();
 
+        Dialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
                 Button posButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
                 final EditText editText = ((AlertDialog) dialog).findViewById(R.id.function_name);
 
+                //
                 posButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         CreateButtonWindowListener activity;
                         if (editText.getText().length() == 0) {
                             ShowErrorMessage("Enter function name");
                             return;
                         }
+
                         try {
                             activity = (CreateButtonWindowListener) getActivity();
 
+                            // checking if the code compiles
+                            // if it does, then close the window
+                            // else - put the error message in new window (in catch)
                             activity.onDialogPositiveClick(CreateButtonWindow.this);
                             getDialog().dismiss();
 
                         } catch (ClassCastException e) {
                             throw new ClassCastException(getActivity().toString()
                                     + " must implement CreateButtonWindowListener");
-
                         } catch (Error err) {
                             ShowErrorMessage(err.getMessage());
                         } catch (android.net.ParseException e) {

@@ -378,8 +378,15 @@ public class MainActivity extends AppCompatActivity
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                 }
-            } catch(Exception e) {
-                outView.setText((String)("Ошибка: " + e.getMessage()));
+            }
+            catch(Exception e) {
+                outView.setText("Ошибка: " + e.getMessage());
+                myScroll.scrollTo(outView.getRight(), 0);
+                isError = true;
+                isAnswered = false;
+            }
+            catch (Error err) {
+                outView.setText("Ошибка: " + err.getMessage());
                 myScroll.scrollTo(outView.getRight(), 0);
                 isError = true;
                 isAnswered = false;
