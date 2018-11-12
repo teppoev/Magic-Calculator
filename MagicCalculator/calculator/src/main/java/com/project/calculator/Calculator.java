@@ -678,12 +678,12 @@ public class Calculator implements ICalculator {
                 forAdd = new FunctionToken(tmp);
             }
             else {
-                throw new IOException("Ошибка ввода 12" + ch + " " + tmp + " " + lastCh);
+                throw new IOException("Ошибка ввода 17" + ch + " " + tmp + " " + lastCh);
             }
             tokens.add(forAdd);
         }
         else if (lastCh != ')') {
-            //throw new IOException("Ошибка ввода 13 " + ch  + " " + tmp + " " + lastCh);
+            //throw new IOException("Ошибка ввода 18 " + ch  + " " + tmp + " " + lastCh);
             tokens.remove(tokens.size() - 1);
         }
 
