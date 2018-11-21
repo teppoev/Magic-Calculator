@@ -8,4 +8,26 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="SelectedSpinnerItemStyle">
+        <item name="android:textColor">@color/absolutelyBlack</item>
+        <item name="android:background">@color/yellowOrange</item>
+    </style>
+
+    <style name="AlertDialogTheme" parent="AppTheme">
+        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
+    </style>
+
+    <style name="AlertDialogStyle" parent="AlertDialog.AppCompat.Light">
+        <item name="colorAccent">@color/yellowOrange</item>
+        <item name="android:textColor">@color/absolutelyBlack</item>
+        <item name="android:background">@color/darkGray</item>
+    </style>
+
+    <style name="BasicViewStyle" parent="AlertDialog.AppCompat">
+        <item name="android:background">@color/absolutelyBlack</item>
+        <item name="android:textColor">@color/darkGray</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColorHint">@color/darkGray</item>
+    </style>
+
 </resources>

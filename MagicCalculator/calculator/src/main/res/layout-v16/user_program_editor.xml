@@ -1,44 +1,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_dark"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:textColor="@android:color/darker_gray"
-    android:textSize="16sp">
+    android:background="@color/absolutelyBlack">
 
-    <EditText
-        android:id="@+id/function_name"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="Name"
-        android:inputType="textShortMessage"
-        android:textColor="@android:color/darker_gray"
-        android:textColorHint="@android:color/darker_gray"
-        android:textSize="20sp"
-        android:gravity="center"></EditText>
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <Spinner
-        android:id="@+id/func_param_num"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/enter_function_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/BasicViewStyle"
+            android:text="Function name: " />
+
+        <EditText
+            android:id="@+id/function_name"
+            style="@style/BasicViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="MyFunction"
+            android:inputType="textShortMessage"></EditText>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:background="@android:color/background_dark"
-        android:textColor="@android:color/darker_gray"
-        android:textColorHint="@android:color/darker_gray"
-        android:textSize="20sp" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_marginHorizontal="10dp"
+            android:id="@+id/enter_param_num_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/BasicViewStyle"
+            android:text="Param number: " />
+        <Spinner
+            android:id="@+id/func_param_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            style="@style/BasicViewStyle"/>
+
+    </LinearLayout>
 
     <EditText
         android:id="@+id/function_body"
+        style="@style/BasicViewStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
         android:gravity="top"
         android:hint="Body"
         android:inputType="textMultiLine"
-        android:textColor="@android:color/darker_gray"
-        android:textColorHint="@android:color/darker_gray"
-        android:textSize="20sp"
         android:typeface="monospace"></EditText>
+
 </LinearLayout>
