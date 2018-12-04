@@ -11,10 +11,10 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
 public class Calculator implements ICalculator {
-    private Map<String, Variable> variables = new HashMap<String, Variable>();
-    private Map<String, IFunction> functions = new HashMap<String, IFunction>();
+    private Map<String, Variable> variables;
+    private Map<String, IFunction> functions = new HashMap<>();
     private ArrayList<Token> filter(String string) throws IOException {
-        ArrayList<Token> tokens = new ArrayList<Token>();
+        ArrayList<Token> tokens = new ArrayList<>();
         Token forAdd;
         String tmp = "";
         boolean isStarted = false;
@@ -682,12 +682,12 @@ public class Calculator implements ICalculator {
                 forAdd = new FunctionToken(tmp);
             }
             else {
-                throw new IOException("Ошибка ввода 12" + ch + " " + tmp + " " + lastCh);
+                throw new IOException("Ошибка ввода 17 " + ch + " " + tmp + " " + lastCh);
             }
             tokens.add(forAdd);
         }
         else if (lastCh != ')') {
-            //throw new IOException("Ошибка ввода 13 " + ch  + " " + tmp + " " + lastCh);
+            //throw new IOException("Ошибка ввода 18 " + ch  + " " + tmp + " " + lastCh);
             tokens.remove(tokens.size() - 1);
         }
 
@@ -951,7 +951,11 @@ public class Calculator implements ICalculator {
     public double calc(String string, Map<String, Variable> _variables, Map<String, IFunction> _functions)
             throws IOException, BraketsFunctionException, BraketsOpenException, BraketsCloseException,
             ExtraCommaException, IncorrectPostfixException, ExtraVariableException {
-        variables = _variables;
+        if (_variables == null) {
+            variables = new HashMap<>();
+        } else {
+            variables = _variables;
+        }
         functions = _functions;
         ArrayList<Token> tokens = new ArrayList<Token>();
         tokens = filter(string);
