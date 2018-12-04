@@ -177,9 +177,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.help:
                 //some code
                 break;
-            case R.id.progButtons:
-                //some code
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
