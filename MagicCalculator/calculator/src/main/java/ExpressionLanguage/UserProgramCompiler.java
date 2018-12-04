@@ -1,6 +1,8 @@
-package com.project.calculator;
+package ExpressionLanguage;
 
 import android.util.Log;
+
+import CalculatorFiles.Calculator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +13,7 @@ import java.util.Stack;
 
 public class UserProgramCompiler {
 
-    UserProgramCompiler() {
+    public UserProgramCompiler() {
         calculator = new Calculator();
         functions = new HashMap<>();
         actionsStack = new Stack<>();

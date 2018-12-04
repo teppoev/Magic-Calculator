@@ -1,4 +1,4 @@
-package com.project.calculator;
+package CalculatorFiles;
 
 public abstract class Token {
     abstract public int getType();

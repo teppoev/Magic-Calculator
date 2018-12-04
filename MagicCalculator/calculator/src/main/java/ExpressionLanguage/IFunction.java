@@ -1,4 +1,4 @@
-package com.project.calculator;
+package ExpressionLanguage;
 
 public interface IFunction {
     double Calculate(double[] params);

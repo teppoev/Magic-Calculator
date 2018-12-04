@@ -1,4 +1,4 @@
-package com.project.calculator;
+package ExpressionLanguage;
 
 public class SimpleBodyAction extends ActionWithBody {
     SimpleBodyAction() {

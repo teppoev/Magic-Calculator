@@ -9,16 +9,17 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
+
+import CalculatorFiles.Calculator;
+import ExpressionLanguage.IFunction;
+import ExpressionLanguage.UserProgramCompiler;
 
 public class MainActivity extends AppCompatActivity
         implements CreateButtonWindow.CreateButtonWindowListener{
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity
     boolean isContextMenu = false;
 
     Calculator calculator = new Calculator();
-    HashMap<String,Variable> variableMap = new HashMap<String, Variable>();
+    HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
     HashMap<String, IFunction> functionMap = new HashMap<String, IFunction>();
 
     private LinearLayout buttonShelf;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public boolean onLongClick(View v) {
                     functionMap.remove(((Button)v).getText());
-                    ((LinearLayout)v.getParent(v)).removeView(v);
+                    ((LinearLayout)v.getParent()).removeView(v);
                     return false;
                 }
             });

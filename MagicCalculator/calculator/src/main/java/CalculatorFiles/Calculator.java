@@ -1,7 +1,11 @@
-package com.project.calculator;
+package CalculatorFiles;
+
+import com.project.calculator.Variable;
 
 import java.io.IOException;
 import java.util.*;
+
+import ExpressionLanguage.IFunction;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;

@@ -1,6 +1,8 @@
-package com.project.calculator;
+package ExpressionLanguage;
 
 import android.util.Log;
+
+import com.project.calculator.Variable;
 
 import java.util.Map;
 
@@ -13,7 +15,7 @@ public class Function implements IFunction {
 
     private int numberOfVariables;
 
-    Function(int _num, ActionWithBody _main) {
+    public Function(int _num, ActionWithBody _main) {
         numberOfVariables = _num;
         main = _main;
 
