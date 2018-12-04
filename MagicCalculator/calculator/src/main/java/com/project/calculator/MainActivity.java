@@ -13,6 +13,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
@@ -31,13 +32,15 @@ public class MainActivity extends AppCompatActivity
     private boolean isStarted = false, isAnswered = false, isError = false, isContextMenu = false;
 
     private Calculator calculator;
+
     private HashMap<String, IFunction> functionsMap = new HashMap<>();
+    private HashMap<String, String> sourceCodeMap = new HashMap<>();
 
     private LinearLayout buttonShelf;
     private int buttonCounter = 0;
     private UserProgramCompiler compiler;
 
-    private OnClickListener oclnewBut = new OnClickListener() {
+    private OnClickListener functionButtonClickListener = new OnClickListener() {
         @Override
         public void onClick(View v) {
             String name = ((Button)v).getText().toString();
@@ -71,6 +74,60 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+    private void DeleteButtonFromShelf(Button but) {
+        String buttonName = but.getText().toString();
+
+        functionsMap.remove(buttonName);
+        sourceCodeMap.remove(buttonName);
+
+        buttonShelf.removeView(but);
+    }
+
+    private void EditFunctionSourceCode(Button but) {
+
+        String buttonName = but.getText().toString();
+        String functionBody = sourceCodeMap.get(buttonName);
+        int paramNum = functionsMap.get(buttonName).getNumberOfArgs();
+
+        functionsMap.remove(buttonName);
+        sourceCodeMap.remove(buttonName);
+
+        CreateButtonWindow window = new CreateButtonWindow();
+
+        Bundle args = new Bundle();
+
+        args.putString("Mode", "Edit");
+        args.putString("Body", functionBody);
+        args.putString("Name", buttonName);
+        args.putInt("ParamNum", paramNum - 1);
+
+        window.setArguments(args);
+
+        window.show(getFragmentManager(), "enterbuttonname");
+    }
+
+    private void showEditDeleteMenu(final View v) {
+        PopupMenu menu = new PopupMenu(this, v);
+        menu.inflate(R.menu.delete_edit_button_menu);
+
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.edit_item:
+                        EditFunctionSourceCode((Button) v);
+                        return true;
+                    case R.id.delete_item:
+                        DeleteButtonFromShelf((Button) v);
+                        return true;
+                }
+                return false;
+            }
+        });
+
+        menu.show();
+    }
+
     private void CreatingButton(String name, String body, int pNum) {
 
         if (!functionsMap.containsKey(name)) {
@@ -83,14 +140,15 @@ public class MainActivity extends AppCompatActivity
                             TableRow.LayoutParams.WRAP_CONTENT);
 
             IFunction function = compiler.Compile(body, pNum);
-            newButton.setOnClickListener(oclnewBut);
+            newButton.setOnClickListener(functionButtonClickListener);
 
             newButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    functionsMap.remove(((Button)v).getText());
-                    ((LinearLayout)v.getParent()).removeView(v);
-                    return false;
+
+                    showEditDeleteMenu(v);
+
+                    return true;
                 }
             });
 
@@ -99,6 +157,7 @@ public class MainActivity extends AppCompatActivity
             buttonShelf.addView(newButton);
 
             functionsMap.put(name, function);
+            sourceCodeMap.put(name, body);
         }
         else {
 
@@ -106,10 +165,49 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void ChangeButtonParams(String newName, String oldName, String body, int pNum) {
+        if(!functionsMap.containsKey(newName)) {
+            int buttonCount = buttonShelf.getChildCount();
+
+            Button button = null;
+
+            for(int i = 0; i < buttonCount; ++i) {
+                button = (Button)buttonShelf.getChildAt(i);
+                if(button.getText().toString().equals(oldName)) {
+                    break;
+                }
+            }
+
+            if(button == null) {
+                //...
+            }
+
+            button.setText(newName);
+
+            IFunction function = compiler.Compile(body, pNum);
+
+            functionsMap.put(newName, function);
+            sourceCodeMap.put(newName, body);
+        }
+        else {
+            //...
+        }
+    }
+
+
     @Override
     public void onDialogPositiveClick(CreateButtonWindow dialog) {
-        CreatingButton(dialog.GetText(), dialog.GetBody(), dialog.GetParamNum());
+
+        switch(dialog.GetMode()) {
+            case "Edit":
+                ChangeButtonParams(dialog.GetName(), dialog.GetOldName(), dialog.GetBody(), dialog.GetParamNum());
+                break;
+            case "Create":
+                CreatingButton(dialog.GetName(), dialog.GetBody(), dialog.GetParamNum());
+                break;
+        }
     }
+
     @Override
     public void onDialogNegativeClick(CreateButtonWindow dialog) {
 
@@ -134,10 +232,18 @@ public class MainActivity extends AppCompatActivity
         compiler = new UserProgramCompiler();
         outView = findViewById(R.id.main_output_view);
         Button magicButton = findViewById(R.id.new_button);
+
         View.OnClickListener clickHandler = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CreateButtonWindow window = new CreateButtonWindow();
+
+                Bundle args = new Bundle();
+
+                args.putString("Mode", "Create");
+
+                window.setArguments(args);
+
                 window.show(getFragmentManager(), "enterbuttonname");
             }
         };
@@ -451,7 +557,7 @@ public class MainActivity extends AppCompatActivity
         for (int i = buttons.size() - 1; i >= 0; --i) {
             tmpButton = buttons.get(i);
             buttonShelf.addView(tmpButton);
-            buttonShelf.getChildAt(buttons.size() - i).setOnClickListener(oclnewBut);
+            buttonShelf.getChildAt(buttons.size() - i).setOnClickListener(functionButtonClickListener);
         }
     }
 }

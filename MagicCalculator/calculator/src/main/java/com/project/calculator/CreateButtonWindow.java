@@ -32,6 +32,10 @@ public class CreateButtonWindow extends DialogFragment {
     private String positiveButtonText = "Save";
     private String negativeButtonText = "Cancel";
 
+    private String mode;
+
+    private String oldName = "";
+
     public interface CreateButtonWindowListener {
         void onDialogPositiveClick(CreateButtonWindow dialog);
         void onDialogNegativeClick(CreateButtonWindow dialog);
@@ -55,10 +59,25 @@ public class CreateButtonWindow extends DialogFragment {
             }
         });
 
+        switch(mode) {
+            case "Edit":
+                paramNumView.setSelection(getArguments().getInt("ParamNum"));
+                break;
+            case "Create":
+                break;
+        }
     }
 
     private void FunctionNameViewInit() {
         functionNameView = currActivityView.findViewById(R.id.function_name);
+
+        switch(mode) {
+            case "Edit":
+                functionNameView.setText(getArguments().getString("Name"));
+                break;
+            case "Create":
+                break;
+        }
     }
 
     private void BodyTextViewInit() {
@@ -89,6 +108,14 @@ public class CreateButtonWindow extends DialogFragment {
         };
 
         bodyTextView.addTextChangedListener(textWatcher);
+
+        switch(mode) {
+            case "Edit":
+                bodyTextView.setText(getArguments().getString("Body"));
+                break;
+            case "Create":
+                break;
+        }
     }
 
     private boolean CheckFunctionNameNotEmpty() {
@@ -101,6 +128,12 @@ public class CreateButtonWindow extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        mode = getArguments().getString("Mode");
+
+        if(mode.equals("Edit")) {
+            oldName = getArguments().getString("Name");
+        }
 
         // base initialization
         currActivityView = getActivity().getLayoutInflater().inflate(R.layout.user_program_editor, null);
@@ -134,17 +167,9 @@ public class CreateButtonWindow extends DialogFragment {
             @Override
             public void onShow(DialogInterface dialog) {
 
-                int blackColor = getResources().getColor(R.color.absolutelyBlack);
-                int whiteColor = getResources().getColor(R.color.darkGray);
-
                 Button positiveButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
                 Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
 
-                positiveButton.setBackgroundColor(blackColor);
-                positiveButton.setTextColor(whiteColor);
-
-                negativeButton.setBackgroundColor(blackColor);
-                negativeButton.setTextColor(whiteColor);
 
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -268,8 +293,12 @@ public class CreateButtonWindow extends DialogFragment {
         paramNumView.setSelection(paramNumView.getFirstVisiblePosition());
     }
 
-    public String GetText() {
+    public String GetName() {
         return functionNameView.getText().toString();
+    }
+
+    public String GetOldName() {
+        return oldName;
     }
 
     public String GetBody() {
@@ -279,6 +308,10 @@ public class CreateButtonWindow extends DialogFragment {
     public int GetParamNum() {
         int pNum = paramNumView.getSelectedItemPosition() + 1;
         return pNum;
+    }
+
+    public String GetMode() {
+        return mode;
     }
 
 }
