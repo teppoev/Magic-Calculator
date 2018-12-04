@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
             newButton.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    functionMap.remove(((Button)v).getText());
+                    functionsMap.remove(((Button)v).getText());
                     ((LinearLayout)v.getParent()).removeView(v);
                     return false;
                 }
