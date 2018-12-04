@@ -109,7 +109,7 @@ public class CreateButtonWindow extends DialogFragment {
         FunctionNameViewInit();
         BodyTextViewInit();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
 
         builder.setView(currActivityView);
         builder.setMessage("Creating new function")

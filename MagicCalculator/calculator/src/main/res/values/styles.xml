@@ -13,14 +13,11 @@
         <item name="android:background">@color/yellowOrange</item>
     </style>
 
-    <style name="AlertDialogTheme" parent="AppTheme">
-        <item name="android:alertDialogTheme">@style/AlertDialogStyle</item>
-    </style>
-
-    <style name="AlertDialogStyle" parent="AlertDialog.AppCompat.Light">
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/yellowOrange</item>
         <item name="android:textColor">@color/absolutelyBlack</item>
         <item name="android:background">@color/darkGray</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
     <style name="BasicViewStyle" parent="AlertDialog.AppCompat">

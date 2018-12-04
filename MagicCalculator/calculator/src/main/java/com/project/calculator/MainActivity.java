@@ -9,6 +9,8 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -55,6 +57,9 @@ public class MainActivity extends AppCompatActivity
             newButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(v.getVisibility() == View.GONE) {
+                        return;
+                    }
                     String name = ((Button)v).getText().toString();
                     IFunction function = functionMap.get(name);
                     if(function != null) {
@@ -79,6 +84,14 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
+            newButton.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    functionMap.remove(((Button)v).getText());
+                    ((LinearLayout)v.getParent(v)).removeView(v);
+                    return false;
+                }
+            });
 
             newButton.setLayoutParams(params);
             buttonCounter++;
@@ -87,6 +100,7 @@ public class MainActivity extends AppCompatActivity
             functionMap.put(name, function);
         }
         else {
+
             //...
         }
     }
@@ -160,6 +174,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
                 break;
+
             default:
                 break;
         }
