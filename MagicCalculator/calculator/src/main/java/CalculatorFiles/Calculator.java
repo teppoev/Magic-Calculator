@@ -20,6 +20,8 @@ public class Calculator implements ICalculator {
         boolean isStarted = false;
         boolean isNotVariable = true;
         boolean isExp = false;
+        final double pinumber = Math.PI;
+        final double enumber = Math.E;
         int i = 0;
         char ch = string.charAt(i), lastCh = string.charAt(i);
         if(ch == '-'){
@@ -67,7 +69,9 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == ')')
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
                 {
                     forAdd = new OperationToken('*');
                     tokens.add(forAdd);
@@ -146,7 +150,9 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == ')')
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
                 {
                     forAdd = new OperationToken('*');
                     tokens.add(forAdd);
@@ -289,7 +295,9 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == ')')
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
                 {
                     forAdd = new OperationToken(ch);
                     tokens.add(forAdd);
@@ -484,7 +492,9 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == ')')
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
                 {
                     forAdd = new OperationToken('*');
                     tokens.add(forAdd);
@@ -516,7 +526,9 @@ public class Calculator implements ICalculator {
                         lastCh >= 'a' && lastCh <= 'z' ||
                         lastCh >= 'A' && lastCh <= 'Z' && lastCh != 'E' ||
                         lastCh == '.' ||
-                        lastCh == '_')
+                        lastCh == '_' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
                 {
                     throw new IOException("Ошибка ввода 13 " + ch  + " " + tmp + " " + lastCh);
                 }
@@ -624,7 +636,6 @@ public class Calculator implements ICalculator {
                         lastCh == '%' ||
                         lastCh == '(' ||
                         lastCh == ',' ||
-                        lastCh == ')' ||
                         lastCh == '=' ||
                         lastCh == '√' && i == 0)
                 {
@@ -653,11 +664,153 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
+                {
+                    forAdd = new OperationToken('*');
+                    tokens.add(forAdd);
+                    forAdd = new OperationToken(ch);
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
                 else {
                     throw new IOException("Ошибка ввода 16 " + ch  + " " + tmp + " " + lastCh);
                 }
             }
-            else throw new IOException("Ошибка ввода Незнакомый символ" + ch + " " + tmp + " " + lastCh);
+            else if (ch == 'π' ||
+                    ch == 'е')
+            {
+                if (lastCh >= '0' && lastCh <= '9' && isNotVariable ||
+                        lastCh == '.' ||
+                        lastCh == 'E')
+                {
+                    if (lastCh == 'E') {
+                        tmp += "1";
+                    }
+                    forAdd = new NumberToken(Double.parseDouble(tmp));
+                    tokens.add(forAdd);
+                    tmp = "";
+                    isStarted = false;
+                    isExp = false;
+                    forAdd = new OperationToken('*');
+                    tokens.add(forAdd);
+                    if (ch == 'π') {
+                        forAdd = new NumberToken(pinumber);
+                    } else {
+                        forAdd = new NumberToken(enumber);
+                    }
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else if (lastCh >= 'a' && lastCh <= 'z' ||
+                        lastCh >= 'A' && lastCh <= 'Z' && lastCh != 'E' ||
+                        lastCh >= '0' && lastCh <= '9' ||
+                        lastCh == '_')
+                {
+                    if (variables.get(tmp) != null) {
+                        forAdd = new VariableToken(tmp);
+                    }
+                    else if (functions.get(tmp) != null) {
+                        forAdd = new FunctionToken(tmp);
+                    }
+                    else {
+                        throw new IOException("Ошибка ввода 11 " + ch + " " + tmp + " " + lastCh);
+                    }
+                    isNotVariable = true;
+                    tokens.add(forAdd);
+                    tmp = "";
+                    forAdd = new OperationToken('*');
+                    tokens.add(forAdd);
+                    if (ch == 'π') {
+                        forAdd = new NumberToken(pinumber);
+                    } else {
+                        forAdd = new NumberToken(enumber);
+                    }
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else if (lastCh == '+' ||
+                        lastCh == '-' ||
+                        lastCh == '*' ||
+                        lastCh == '/' ||
+                        lastCh == '^' ||
+                        lastCh == '%' ||
+                        lastCh == '(' ||
+                        lastCh == ',' ||
+                        lastCh == '=' ||
+                        lastCh == '√')
+                {
+                    if (ch == 'π') {
+                        forAdd = new NumberToken(pinumber);
+                    } else {
+                        forAdd = new NumberToken(enumber);
+                    }
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else if (lastCh == '>' ||
+                        lastCh == '<')
+                {
+                    tmp += lastCh;
+                    forAdd = new BinaryToken(tmp);
+                    tokens.add(forAdd);
+                    tmp = "";
+                    isStarted = false;
+                    isExp = false;
+                    if (ch == 'π') {
+                        forAdd = new NumberToken(pinumber);
+                    } else {
+                        forAdd = new NumberToken(enumber);
+                    }
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else if (lastCh == ')' ||
+                        lastCh == 'π' ||
+                        lastCh == 'е')
+                {
+                    if (i != 0){
+                        forAdd = new OperationToken('*');
+                        tokens.add(forAdd);
+                    }
+                    if (ch == 'π') {
+                        forAdd = new NumberToken(pinumber);
+                    } else {
+                        forAdd = new NumberToken(enumber);
+                    }
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
+                    }
+                }
+                else {
+                    throw new IOException("Ошибка ввода 12 " + ch  + " " + tmp + " " + lastCh);
+                }
+            }
+            else throw new IOException("Ошибка ввода Незнакомый символ " + ch + " " + tmp + " " + lastCh);
         }
 
         if (lastCh >= '0' && lastCh <= '9' && isNotVariable ||
@@ -686,7 +839,7 @@ public class Calculator implements ICalculator {
             }
             tokens.add(forAdd);
         }
-        else if (lastCh != ')') {
+        else if (lastCh != ')' && lastCh != 'π' && lastCh != 'е') {
             //throw new IOException("Ошибка ввода 18 " + ch  + " " + tmp + " " + lastCh);
             tokens.remove(tokens.size() - 1);
         }

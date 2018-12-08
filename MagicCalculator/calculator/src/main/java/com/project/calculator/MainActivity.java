@@ -19,7 +19,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import CalculatorFiles.Calculator;
 import ExpressionLanguage.IFunction;
 import ExpressionLanguage.UserProgramCompiler;
@@ -53,6 +52,7 @@ public class MainActivity extends AppCompatActivity
                     outView.setText("");
                     myScroll.scrollTo(outView.getRight(), 0);
                     isAnswered = false;
+
                 }
                 if (isError) {
                     grayOutView.setText(outView.getText());
@@ -250,36 +250,104 @@ public class MainActivity extends AppCompatActivity
         };
         magicButton.setOnClickListener(clickHandler);
 
+        ButtonsInit();
+
     }
+
+    void ButtonsInit() {
+        IFunction sinFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.sin(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        IFunction cosFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.cos(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        IFunction tanFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.tan(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        IFunction lnFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.log(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        functionsMap.put("sin", sinFunc);
+        functionsMap.put("cos", cosFunc);
+        functionsMap.put("tan", tanFunc);
+        functionsMap.put("ln", lnFunc);
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-        switch (v.getId()) {
+        isContextMenu = true;
+        if (isAnswered) {
+            grayOutView.setText(outView.getText());
+            myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+            outView.setText("");
+            myScroll.scrollTo(outView.getRight(), 0);
+            isAnswered = false;
+        } else if (!isError) {
+            char lastCh;
+            switch (v.getId()) {
             case R.id.buttondot:
-                isContextMenu = true;
-                if (isAnswered) {
-                    grayOutView.setText(outView.getText());
-                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
-                    outView.setText("");
-                    myScroll.scrollTo(outView.getRight(), 0);
-                    isAnswered = false;
-                } else if (!isError) {
-                    char lastCh;
-                    if (outView.getText().toString().length() != 0) {
-                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                        if (lastCh == ')' || lastCh >= 'a' && lastCh <= 'z' ||
-                                lastCh >= 'A' && lastCh <= 'Z' ||
-                                lastCh >= '0' && lastCh <= '9') {
+                if (outView.getText().toString().length() != 0) {
+                    lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                    if (lastCh == ')' || lastCh >= 'a' && lastCh <= 'z' ||
+                            lastCh >= 'A' && lastCh <= 'Z' ||
+                            lastCh >= '0' && lastCh <= '9') {
                             outView.append(",");
                             isStarted = false;
-                        } else if (lastCh == '.') {
+                    } else if (lastCh == '.') {
                             outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                             outView.append(",");
                             isStarted = false;
                         }
                     }
+                break;
+            case R.id.buttonsin:
+                    if (outView.getText().length() != 0) {
+                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        if (lastCh == '.') {
+                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        }
+                    }
+                    isStarted = false;
+                    outView.append("asin(");
+                    ++nob;
                 }
                 break;
-
             default:
                 break;
         }
@@ -340,6 +408,7 @@ public class MainActivity extends AppCompatActivity
 
         if (v.getId() == R.id.buttonC) {
             outView.setText("");
+            myScroll.scrollTo(outView.getRight(), 0);
             nob = 0;
             isStarted = false;
         }
@@ -449,16 +518,20 @@ public class MainActivity extends AppCompatActivity
         else if (v.getId() == R.id.buttonsin || v.getId() == R.id.buttoncos ||
                 v.getId() == R.id.buttontan || v.getId() == R.id.buttonln ||
                 v.getId() == R.id.buttonsqrt ) {
-            char lastCh;
-            if (outView.getText().length() != 0) {
-                lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                if (lastCh == '.') {
-                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+            if (!isContextMenu || v.getId() == R.id.buttonln || v.getId() == R.id.buttonsqrt) {
+                char lastCh;
+                if (outView.getText().length() != 0) {
+                    lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                    if (lastCh == '.') {
+                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                    }
                 }
+                isStarted = false;
+                outView.append(((Button) v).getText().toString() + "(");
+                ++nob;
+            } else {
+                isContextMenu = false;
             }
-            isStarted = false;
-            outView.append(((Button)v).getText().toString() + "(");
-            ++nob;
         }
         else if (v.getId() == R.id.buttoncalc){
             try {
@@ -468,7 +541,7 @@ public class MainActivity extends AppCompatActivity
                 if (outView.getText().length() != 0) {
                     char lastCh;
                     lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                    while (!(lastCh >= '0' && lastCh <= '9') && !(lastCh == '.') && !(lastCh >= 'a' && lastCh <= 'z') && !(lastCh == '_') && !(lastCh == ')')){
+                    while (!(lastCh >= '0' && lastCh <= '9') && !(lastCh == '.') && !(lastCh >= 'a' && lastCh <= 'z') && !(lastCh == '_') && !(lastCh == ')') && !(lastCh == 'е') && !(lastCh == 'π')){
                         outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                         if (lastCh == '(') --nob;
                         if (outView.getText().length() != 0) {
