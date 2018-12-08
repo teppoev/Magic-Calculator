@@ -1,6 +1,7 @@
 package com.project.calculator;
 
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -292,11 +293,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings:
-                //some code
-                break;
             case R.id.help:
-                //some code
+                Intent intent = new Intent(this, HelpActivity.class);
+                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);

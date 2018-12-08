@@ -36,5 +36,14 @@
     <string name="item3">Programmable Buttons</string>
     <string name="programmable_buttons">My button</string>
     <string name="newbut">Add...</string>
+    <string name="tab1">
+        Tip #1
+    </string>
+    <string name="tab2">
+        Tip #2
+    </string>
+    <string name="tab3">
+        Tip #3
+    </string>s
 
 </resources>

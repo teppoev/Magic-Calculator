@@ -1,1 +1,1 @@
-include ':app', ':dynamicbuttons', ':calculator'
+include ':calculator'
