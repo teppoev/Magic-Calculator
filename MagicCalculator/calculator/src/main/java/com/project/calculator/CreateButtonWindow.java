@@ -25,9 +25,11 @@ public class CreateButtonWindow extends DialogFragment {
 
     private EditText functionNameView;
     private EditText bodyTextView;
-    private Spinner paramNumView;
+    private TextView paramNumView;
     private View currActivityView;
     private TextWatcher textWatcher;
+
+    private int paramNum = 1;
 
     private String positiveButtonText = "Save";
     private String negativeButtonText = "Cancel";
@@ -42,30 +44,32 @@ public class CreateButtonWindow extends DialogFragment {
     }
 
     private void ParamNumberViewInit() {
+
+        Button increaseParamNum;
+        Button decreaseParamNum;
+
         paramNumView = currActivityView.findViewById(R.id.func_param_num);
-        InitParamNumberSpinner(5);
+        increaseParamNum = currActivityView.findViewById(R.id.plus_arg_button);
+        decreaseParamNum = currActivityView.findViewById(R.id.minus_arg_button);
 
-        paramNumView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        increaseParamNum.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-                view.setBackgroundColor(getResources().getColor(R.color.yellowOrange));
-                ((TextView)view).setTextColor(getResources().getColor(R.color.absolutelyBlack));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                paramNum++;
+                paramNumView.append(Integer.toString(paramNum));
             }
         });
 
-        switch(mode) {
-            case "Edit":
-                paramNumView.setSelection(getArguments().getInt("ParamNum"));
-                break;
-            case "Create":
-                break;
-        }
+        decreaseParamNum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(paramNum > 1) {
+                    paramNum--;
+                    paramNumView.append(Integer.toString(paramNum));
+                }
+            }
+        });
+
     }
 
     private void FunctionNameViewInit() {
@@ -122,10 +126,6 @@ public class CreateButtonWindow extends DialogFragment {
         return functionNameView.length() != 0;
     }
 
-    private boolean CheckBodyTextNotEmpty() {
-        return bodyTextView.length() != 0;
-    }
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -168,8 +168,6 @@ public class CreateButtonWindow extends DialogFragment {
             public void onShow(DialogInterface dialog) {
 
                 Button positiveButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                Button negativeButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
-
 
                 positiveButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -282,17 +280,6 @@ public class CreateButtonWindow extends DialogFragment {
                 .show();
     }
 
-    private void InitParamNumberSpinner(int pNum) {
-        String[] data = new String[pNum];
-        for(int i = 0; i < pNum; ++i) {
-            data[i] = Integer.toString(i + 1) + " parameter" + ((i != 0) ? "s" : "");
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.param_number_text, data);
-        paramNumView.setAdapter(adapter);
-        paramNumView.setPrompt("Func param num");
-        paramNumView.setSelection(paramNumView.getFirstVisiblePosition());
-    }
-
     public String GetName() {
         return functionNameView.getText().toString();
     }
@@ -306,7 +293,7 @@ public class CreateButtonWindow extends DialogFragment {
     }
 
     public int GetParamNum() {
-        int pNum = paramNumView.getSelectedItemPosition() + 1;
+        int pNum = Integer.parseInt(paramNumView.getText().toString());
         return pNum;
     }
 

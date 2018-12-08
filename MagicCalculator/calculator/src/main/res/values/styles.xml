@@ -20,12 +20,21 @@
 
     </style>
 
-
-    <style name="BasicViewStyle" parent="Base.AlertDialog.AppCompat.Light">
+    <style name="BasicViewStyle" parent="@android:style/Theme.Holo">
         <item name="android:background">@color/absolutelyBlack</item>
         <item name="android:textColor">@color/darkGray</item>
         <item name="android:textSize">20sp</item>
         <item name="android:textColorHint">@color/darkGray</item>
+    </style>
+
+    <style name="MenuItemStyle">
+        <item name="android:background">@drawable/setting_item</item>
+        <item name="android:layout_margin">5dp</item>
+    </style>
+
+    <style name="MenuItemTextStyle">
+        <item name="android:textColor">@color/absolutelyWhite</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
 </resources>
