@@ -56,7 +56,7 @@ public class CreateButtonWindow extends DialogFragment {
             @Override
             public void onClick(View v) {
                 paramNum++;
-                paramNumView.append(Integer.toString(paramNum));
+                paramNumView.setText(Integer.toString(paramNum));
             }
         });
 
@@ -65,7 +65,7 @@ public class CreateButtonWindow extends DialogFragment {
             public void onClick(View v) {
                 if(paramNum > 1) {
                     paramNum--;
-                    paramNumView.append(Integer.toString(paramNum));
+                    paramNumView.setText(Integer.toString(paramNum));
                 }
             }
         });
@@ -142,7 +142,7 @@ public class CreateButtonWindow extends DialogFragment {
         FunctionNameViewInit();
         BodyTextViewInit();
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.AlertDialogTheme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setView(currActivityView);
         builder.setMessage("Creating new function")
