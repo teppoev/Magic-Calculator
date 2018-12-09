@@ -222,6 +222,9 @@ public class MainActivity extends AppCompatActivity
         myScroll = findViewById(R.id.scroll_main_out_view);
         myGrayScroll = findViewById(R.id.scroll_add_out_view);
         registerForContextMenu(findViewById(R.id.buttondot));
+        registerForContextMenu(findViewById(R.id.buttonsin));
+        registerForContextMenu(findViewById(R.id.buttoncos));
+        registerForContextMenu(findViewById(R.id.buttontan));
 
         outView = findViewById(R.id.main_output_view);
         grayOutView = findViewById(R.id.additional_output_view);
@@ -303,40 +306,91 @@ public class MainActivity extends AppCompatActivity
             }
         };
 
+        IFunction asinFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.asin(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        IFunction acosFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) {
+                return Math.acos(params[0]);
+            }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
+        IFunction atanFunc = new IFunction() {
+            @Override
+            public double Calculate(double[] params) { return Math.atan(params[0]); }
+
+            @Override
+            public int getNumberOfArgs() {
+                return 1;
+            }
+        };
+
         functionsMap.put("sin", sinFunc);
         functionsMap.put("cos", cosFunc);
         functionsMap.put("tan", tanFunc);
         functionsMap.put("ln", lnFunc);
+        functionsMap.put("asin", asinFunc);
+        functionsMap.put("acos", acosFunc);
+        functionsMap.put("atan", atanFunc);
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         isContextMenu = true;
-        if (isAnswered) {
-            grayOutView.setText(outView.getText());
-            myGrayScroll.scrollTo(grayOutView.getRight(), 0);
-            outView.setText("");
-            myScroll.scrollTo(outView.getRight(), 0);
-            isAnswered = false;
-        } else if (!isError) {
-            char lastCh;
-            switch (v.getId()) {
+        switch (v.getId()) {
             case R.id.buttondot:
-                if (outView.getText().toString().length() != 0) {
-                    lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                    if (lastCh == ')' || lastCh >= 'a' && lastCh <= 'z' ||
-                            lastCh >= 'A' && lastCh <= 'Z' ||
-                            lastCh >= '0' && lastCh <= '9') {
+                if (isAnswered) {
+                    grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    outView.setText("");
+                    myScroll.scrollTo(outView.getRight(), 0);
+                    isAnswered = false;
+                } else if (!isError) {
+                    char lastCh;
+                    if (outView.getText().toString().length() != 0) {
+                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        if (lastCh == ')' || lastCh >= 'a' && lastCh <= 'z' ||
+                                lastCh >= 'A' && lastCh <= 'Z' ||
+                                lastCh >= '0' && lastCh <= '9') {
                             outView.append(",");
                             isStarted = false;
-                    } else if (lastCh == '.') {
+                        } else if (lastCh == '.') {
                             outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
                             outView.append(",");
                             isStarted = false;
                         }
                     }
-                break;
+                    break;
+                }
             case R.id.buttonsin:
+                if (isAnswered || isError) {
+                    grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    outView.setText("asin(");
+                    ++nob;
+                    myScroll.scrollTo(outView.getRight(), 0);
+                    if (isAnswered) {
+                        isAnswered = false;
+                    } else {
+                        isError = false;
+                    }
+                } else {
+                    char lastCh;
                     if (outView.getText().length() != 0) {
                         lastCh = outView.getText().charAt(outView.getText().length() - 1);
                         if (lastCh == '.') {
@@ -348,10 +402,61 @@ public class MainActivity extends AppCompatActivity
                     ++nob;
                 }
                 break;
+            case R.id.buttoncos:
+                if (isAnswered || isError) {
+                    grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    outView.setText("acos(");
+                    ++nob;
+                    myScroll.scrollTo(outView.getRight(), 0);
+                    if (isAnswered) {
+                        isAnswered = false;
+                    } else {
+                        isError = false;
+                    }
+                } else {
+                    char lastCh;
+                    if (outView.getText().length() != 0) {
+                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        if (lastCh == '.') {
+                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        }
+                    }
+                    isStarted = false;
+                    outView.append("acos(");
+                    ++nob;
+                }
+                break;
+            case R.id.buttontan:
+                if (isAnswered || isError) {
+                    grayOutView.setText(outView.getText());
+                    myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    outView.setText("atan(");
+                    ++nob;
+                    myScroll.scrollTo(outView.getRight(), 0);
+                    if (isAnswered) {
+                        isAnswered = false;
+                    } else {
+                        isError = false;
+                    }
+                } else {
+                    char lastCh;
+                    if (outView.getText().length() != 0) {
+                        lastCh = outView.getText().charAt(outView.getText().length() - 1);
+                        if (lastCh == '.') {
+                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        }
+                    }
+                    isStarted = false;
+                    outView.append("atan(");
+                    ++nob;
+                }
+                break;
             default:
                 break;
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
