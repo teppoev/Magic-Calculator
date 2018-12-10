@@ -1,6 +1,8 @@
 package ExpressionLanguage;
 
-public abstract class Action implements IAction {
+import java.io.Serializable;
+
+public abstract class Action implements IAction, Serializable {
     protected ActionWithBody parent;
     private int lineNumber = 0;
 

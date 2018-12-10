@@ -1,6 +1,8 @@
 package com.project.calculator;
 
-public class Variable {
+import java.io.Serializable;
+
+public class Variable implements Serializable{
     private double value;
     public Variable() {}
     public Variable(double _value) { value = _value; }

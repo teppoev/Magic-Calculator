@@ -4,13 +4,14 @@ import android.util.Log;
 
 import com.project.calculator.Variable;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Function implements IFunction {
+public class Function implements IFunction, Serializable{
 
     private ActionWithBody main;
     private Variable[] variables;
-    private Map<String, IFunction> functions;
+    //private Map<String, IFunction> functions;
     private Variable result;
 
     private int numberOfVariables;
@@ -36,9 +37,6 @@ public class Function implements IFunction {
     @Override
     public int getNumberOfArgs() {
         return numberOfVariables;
-    }
-    public void setNumberOfVariables(int _num) {
-        numberOfVariables = _num;
     }
 
     @Override

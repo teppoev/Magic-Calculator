@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -128,6 +130,15 @@ public class MainActivity extends AppCompatActivity
 
         menu.show();
     }
+    private View.OnLongClickListener onLongClickButtonListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+
+            showEditDeleteMenu(v);
+
+            return true;
+        }
+    };
 
     private void CreatingButton(String name, String body, int pNum) {
 
@@ -143,17 +154,9 @@ public class MainActivity extends AppCompatActivity
             IFunction function = compiler.Compile(body, pNum);
             newButton.setOnClickListener(functionButtonClickListener);
 
-            newButton.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
+            newButton.setOnLongClickListener(onLongClickButtonListener);
 
-                    showEditDeleteMenu(v);
-
-                    return true;
-                }
-            });
-
-            newButton.setLayoutParams(params);
+            // newButton.setLayoutParams(params);
             buttonCounter++;
             buttonShelf.addView(newButton);
 
