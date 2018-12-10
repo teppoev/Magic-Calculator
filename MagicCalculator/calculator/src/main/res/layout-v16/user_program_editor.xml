@@ -2,67 +2,112 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:background="@color/absolutelyBlack">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_marginHorizontal="10dp"
-            android:id="@+id/enter_function_name_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/BasicViewStyle"
-            android:text="Function name: " />
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
 
         <EditText
             android:id="@+id/function_name"
-            style="@style/BasicViewStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:gravity="center"
-            android:hint="MyFunction"
-            android:inputType="textShortMessage"></EditText>
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:hint="My function"
+            android:inputType="textShortMessage"/>
 
+        <TextView
+            android:id="@+id/enter_function_name_label"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:text="function's name"/>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+
+        <Button
+            android:id="@+id/minus_arg_button"
+            style="@style/Base.TextAppearance.AppCompat.Button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/setting_item"
+            android:text="-"
+            android:textColor="@color/absolutelyWhite" />
+
         <TextView
+            android:id="@+id/func_param_num"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_marginHorizontal="10dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/plus_arg_button"
+            style="@style/Base.TextAppearance.AppCompat.Button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:background="@drawable/setting_item"
+            android:text="+"
+            android:textColor="@color/absolutelyWhite" />
+
+        <TextView
             android:id="@+id/enter_param_num_label"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/BasicViewStyle"
-            android:text="Param number: " />
-        <Spinner
-            android:id="@+id/func_param_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            style="@style/BasicViewStyle"/>
+            android:layout_height="match_parent"
+            android:layout_weight="0"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textSize="20sp"
+            android:text="param number"
+            android:gravity="center"/>
 
     </LinearLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/colorPrimary"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="10dp"/>
+
     <EditText
         android:id="@+id/function_body"
-        style="@style/BasicViewStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp"
+        android:textSize="20sp"
         android:gravity="top"
         android:hint="Body"
         android:inputType="textMultiLine"
-        android:typeface="monospace"></EditText>
+        android:typeface="monospace"
+        android:background="#223344" />
 
 
 </LinearLayout>
