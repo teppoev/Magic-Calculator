@@ -523,14 +523,11 @@ public class MainActivity extends AppCompatActivity
 
     public void onClickStart(View v) {
         if (isAnswered) {
-            if (v.getId() == R.id.buttonC) {
+            if (v.getId() == R.id.buttonC || v.getId() == R.id.buttondelete) {
                 grayOutView.setText(outView.getText());
                 myGrayScroll.scrollTo(grayOutView.getRight(), 0);
                 myGrayScroll.scrollBy(-1, 0);
                 isGrayScroll = true;
-            }
-            else if (v.getId() == R.id.buttondelete) {
-                outView.setText("");
             }
             else if (v.getId() == R.id.buttonbrakets || v.getId() == R.id.button7 ||
                     v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
@@ -589,21 +586,15 @@ public class MainActivity extends AppCompatActivity
             if (lastCh == '+' || lastCh == '-' || lastCh == '*' || lastCh == '/' ||
                     lastCh == '%' || lastCh == '(' || lastCh == '^' || lastCh == '√' ||
                     lastCh >= 'a' && lastCh <= 'z' || lastCh == ',' || lastCh == '_' ||
-                    lastCh >= 'A' && lastCh <= 'Z' && lastCh != 'E' ||
+                    lastCh >= 'A' && lastCh <= 'Z' ||
                     (lastCh >= '0' && lastCh <= '9' || lastCh == '.' || lastCh == 'π' ||
-                            lastCh == 'е' || lastCh == 'E') && nob == 0)
+                            lastCh == 'е') && nob == 0)
             {
-                if(lastCh == 'E') {
-                    outView.append("1");
-                }
                 outView.append("(");
                 ++nob;
-            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == 'π' || lastCh == 'е' ||
-                    lastCh == 'E') {
+            } else if (lastCh >= '0' && lastCh <= '9' || lastCh == 'π' || lastCh == 'е')
+            {
                 isStarted = false;
-                if(lastCh == 'E') {
-                    outView.append("1");
-                }
                 outView.append(")");
                 --nob;
             } else if (lastCh == '.') {
@@ -664,7 +655,7 @@ public class MainActivity extends AppCompatActivity
                     if (lastCh >= '0' && lastCh <= '9'){
                         outView.append(".");
                     }
-                    else {
+                    else if (lastCh == 'E') {} else {
                         outView.append("0.");
                     }
                 } else {

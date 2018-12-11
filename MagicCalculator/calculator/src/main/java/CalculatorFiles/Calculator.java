@@ -83,7 +83,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 1 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#1 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch >= 'a' && ch <= 'z'|| ch >= 'A' && ch <= 'Z' && ch != 'E' ||
@@ -94,7 +94,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -165,7 +165,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 2 " + ch + " " + tmp + " " + lastCh);
+                    throw new IOException("#2 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == 'E')
@@ -185,7 +185,7 @@ public class Calculator implements ICalculator {
                     isExp = true;
                 }
                 else {
-                    throw new IOException("Ошибка ввода EXP " + ch + " " + tmp + " " + lastCh);
+                    throw new IOException("Unexpected char before E: \'" + lastCh + "\". There should have been digits or .");
                 }
             }
             else if (ch == '+' ||
@@ -202,7 +202,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E' && ch != '-')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -238,7 +238,7 @@ public class Calculator implements ICalculator {
                         forAdd = new FunctionToken(tmp);
                     }
                     else {
-                        throw new IOException("Ошибка ввода 3 " + ch + " " + tmp + " " + lastCh);
+                        throw new IOException("#1 There is no function or variable with name " + tmp + " here");
                     }
                     isNotVariable = true;
                     tokens.add(forAdd);
@@ -251,38 +251,18 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == '+' ||
-                        lastCh == '-' ||
-                        lastCh == '*' ||
-                        lastCh == '/' ||
-                        lastCh == '^' ||
-                        lastCh == '%' ||
-                        lastCh == ',' ||
-                        lastCh == '>' ||
-                        lastCh == '<' ||
-                        lastCh == '=' ||
-                        lastCh == '√' ||
-                        lastCh == '!')
+                else if (lastCh == '(' && ch == '-')
                 {
-                    throw new IOException("Ошибка ввода 4 " + ch  + " " + tmp + " " + lastCh);
-                }
-                else if (lastCh == '(')
-                {
-                    if (ch == '-'){
-                        tmp = "0";
-                        forAdd = new NumberToken(Double.valueOf(tmp));
-                        tokens.add(forAdd);
-                        tmp = "";
-                        forAdd = new OperationToken('-');
-                        tokens.add(forAdd);
-                        lastCh = ch;
-                        ++i;
-                        if(i < string.length()) {
-                            ch = string.charAt(i);
-                        }
-                    }
-                    else {
-                        throw new IOException("Ошибка ввода 5 " + ch  + " " + tmp + " " + lastCh);
+                    tmp = "0";
+                    forAdd = new NumberToken(Double.valueOf(tmp));
+                    tokens.add(forAdd);
+                    tmp = "";
+                    forAdd = new OperationToken('-');
+                    tokens.add(forAdd);
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
                     }
                 }
                 else if (lastCh == ')' ||
@@ -298,7 +278,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 6 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#3 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == '>' ||
@@ -311,7 +291,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -335,7 +315,7 @@ public class Calculator implements ICalculator {
                         forAdd = new FunctionToken(tmp);
                     }
                     else {
-                        throw new IOException("Ошибка ввода 7 " + ch + " " + tmp + " " + lastCh);
+                        throw new IOException("#2 There is no function or variable with name " + tmp + " here");
                     }
                     isNotVariable = true;
                     tokens.add(forAdd);
@@ -346,17 +326,6 @@ public class Calculator implements ICalculator {
                     if(i < string.length()) {
                         ch = string.charAt(i);
                     }
-                }
-                else if (lastCh == '+' ||
-                        lastCh == '-' ||
-                        lastCh == '*' ||
-                        lastCh == '/' ||
-                        lastCh == '^' ||
-                        lastCh == '%' ||
-                        lastCh == '(' ||
-                        lastCh == ',')
-                {
-                    throw new IOException("Ошибка ввода 8 " + ch  + " " + tmp + " " + lastCh);
                 }
                 else if (lastCh == ')')
                 {
@@ -369,32 +338,24 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                 }
-                else if (lastCh == '>' ||
+                else if ((lastCh == '>' ||
                         lastCh == '<' ||
                         lastCh == '=' ||
-                        lastCh == '!')
+                        lastCh == '!') && ch == '=')
                 {
-                    if (ch == '>' ||
-                            ch == '<' ||
-                            ch == '!')
-                    {
-                        throw new IOException("Ошибка ввода 9 " + ch + " " + tmp + " " + lastCh);
-                    }
-                    else {
-                        isStarted = false;
-                        tmp += lastCh; tmp += ch;
-                        forAdd = new BinaryToken(tmp);
-                        tokens.add(forAdd);
-                        tmp = "";
-                        lastCh = ch;
-                        ++i;
-                        if(i < string.length()) {
-                            ch = string.charAt(i);
-                        }
+                    isStarted = false;
+                    tmp += lastCh; tmp += ch;
+                    forAdd = new BinaryToken(tmp);
+                    tokens.add(forAdd);
+                    tmp = "";
+                    lastCh = ch;
+                    ++i;
+                    if(i < string.length()) {
+                        ch = string.charAt(i);
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 10 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#4 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == '(')
@@ -404,7 +365,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -433,7 +394,7 @@ public class Calculator implements ICalculator {
                         forAdd = new FunctionToken(tmp);
                     }
                     else {
-                        throw new IOException("Ошибка ввода 11 " + ch + " " + tmp + " " + lastCh);
+                        throw new IOException("#3 There is no function or variable with name " + tmp + " here");
                     }
                     isNotVariable = true;
                     tokens.add(forAdd);
@@ -497,7 +458,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 12 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#5 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == '.')
@@ -511,16 +472,6 @@ public class Calculator implements ICalculator {
                         ch = string.charAt(i);
                     }
                     isStarted = true;
-                }
-                else if (lastCh >= '0' && lastCh <= '9' ||
-                        lastCh >= 'a' && lastCh <= 'z' ||
-                        lastCh >= 'A' && lastCh <= 'Z' && lastCh != 'E' ||
-                        lastCh == '.' ||
-                        lastCh == '_' ||
-                        lastCh == 'π' ||
-                        lastCh == 'е')
-                {
-                    throw new IOException("Ошибка ввода 13 " + ch  + " " + tmp + " " + lastCh);
                 }
                 else if (lastCh == '+' ||
                         lastCh == '-' ||
@@ -566,7 +517,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 14 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#6 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == '√')
@@ -576,7 +527,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -605,7 +556,7 @@ public class Calculator implements ICalculator {
                         forAdd = new FunctionToken(tmp);
                     }
                     else {
-                        throw new IOException("Ошибка ввода 15 " + ch + " " + tmp + " " + lastCh);
+                        throw new IOException("#4 There is no function or variable with name " + tmp + " here");
                     }
                     isNotVariable = true;
                     tokens.add(forAdd);
@@ -669,7 +620,7 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 16 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#7 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
             else if (ch == 'π' ||
@@ -680,7 +631,7 @@ public class Calculator implements ICalculator {
                         lastCh == 'E')
                 {
                     if (lastCh == 'E') {
-                        tmp += "1";
+                        tmp += "0";
                     }
                     forAdd = new NumberToken(Double.parseDouble(tmp));
                     tokens.add(forAdd);
@@ -713,7 +664,7 @@ public class Calculator implements ICalculator {
                         forAdd = new FunctionToken(tmp);
                     }
                     else {
-                        throw new IOException("Ошибка ввода 11 " + ch + " " + tmp + " " + lastCh);
+                        throw new IOException("#5 There is no function or variable with name " + tmp + " here");
                     }
                     isNotVariable = true;
                     tokens.add(forAdd);
@@ -797,10 +748,10 @@ public class Calculator implements ICalculator {
                     }
                 }
                 else {
-                    throw new IOException("Ошибка ввода 12 " + ch  + " " + tmp + " " + lastCh);
+                    throw new IOException("#8 Unexpected  \"" + ch + "\" after \"" + lastCh + "\"");
                 }
             }
-            else throw new IOException("Ошибка ввода Незнакомый символ " + ch + " " + tmp + " " + lastCh);
+            else throw new IOException("Unexpected  \"" + ch + "\"");
         }
 
         if (lastCh >= '0' && lastCh <= '9' && isNotVariable ||
@@ -808,7 +759,7 @@ public class Calculator implements ICalculator {
                 lastCh == 'E')
         {
             if (lastCh == 'E') {
-                tmp += "1";
+                tmp += "0";
             }
             forAdd = new NumberToken(Double.parseDouble(tmp));
             tokens.add(forAdd);
@@ -825,12 +776,11 @@ public class Calculator implements ICalculator {
                 forAdd = new FunctionToken(tmp);
             }
             else {
-                throw new IOException("Ошибка ввода 17 " + ch + " " + tmp + " " + lastCh);
+                throw new IOException("#6 There is no function or variable with name " + tmp + " here");
             }
             tokens.add(forAdd);
         }
         else if (lastCh != ')' && lastCh != 'π' && lastCh != 'е') {
-            //throw new IOException("Ошибка ввода 18 " + ch  + " " + tmp + " " + lastCh);
             tokens.remove(tokens.size() - 1);
         }
 
