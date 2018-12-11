@@ -106,8 +106,8 @@
         android:gravity="top"
         android:hint="Body"
         android:inputType="textMultiLine"
-        android:typeface="monospace"
-        android:background="#223344" />
+        android:lines="10"
+        android:typeface="monospace" />
 
 
 </LinearLayout>

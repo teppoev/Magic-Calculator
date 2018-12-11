@@ -1,16 +1,16 @@
 package com.project.calculator;
 
 
-import android.content.Intent;
+/*import android.content.Intent;*/
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -28,8 +28,8 @@ public class MainActivity extends AppCompatActivity
 
     private TextView outView, grayOutView;
     private HorizontalScrollView myScroll, myGrayScroll;
-    private int nob = 0; //number of brackets in outView; if ( then ++nub else if ) then --nubZ
-    private boolean isStarted = false, isAnswered = false, isError = false, isContextMenu = false;
+    private int nob = 0; //number of brackets in outView; if ( then ++nub else if ) then --nub
+    private boolean isStarted, isAnswered, isError, isContextMenu, isScroll, isGrayScroll;
 
     private Calculator calculator;
 
@@ -49,28 +49,34 @@ public class MainActivity extends AppCompatActivity
                 if (isAnswered) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("");
-                    myScroll.scrollTo(outView.getRight(), 0);
                     isAnswered = false;
 
                 }
                 if (isError) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("");
-                    myScroll.scrollTo(outView.getRight(), 0);
                     isError = false;
                 }
                 char lastCh;
                 if (outView.getText().length() != 0) {
                     lastCh = outView.getText().charAt(outView.getText().length() - 1);
                     if (lastCh == '.') {
-                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        outView.setText(outView.getText()
+                                .subSequence(0, outView.getText().length() - 1));
                         isStarted = false;
                     }
                 }
                 outView.append(name + "(");
                 ++nob;
+                myScroll.scrollTo(outView.getRight(), 0);
+                myScroll.scrollBy(-1, 0);
+                isScroll = true;
             }
         }
     };
@@ -195,69 +201,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-    @Override
-    public void onDialogPositiveClick(CreateButtonWindow dialog) {
-
-        switch(dialog.GetMode()) {
-            case "Edit":
-                ChangeButtonParams(dialog.GetName(), dialog.GetOldName(), dialog.GetBody(), dialog.GetParamNum());
-                break;
-            case "Create":
-                CreatingButton(dialog.GetName(), dialog.GetBody(), dialog.GetParamNum());
-                break;
-        }
-    }
-
-    @Override
-    public void onDialogNegativeClick(CreateButtonWindow dialog) {
-
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        myScroll = findViewById(R.id.scroll_main_out_view);
-        myGrayScroll = findViewById(R.id.scroll_add_out_view);
-        registerForContextMenu(findViewById(R.id.buttondot));
-        registerForContextMenu(findViewById(R.id.buttonsin));
-        registerForContextMenu(findViewById(R.id.buttoncos));
-        registerForContextMenu(findViewById(R.id.buttontan));
-
-        outView = findViewById(R.id.main_output_view);
-        grayOutView = findViewById(R.id.additional_output_view);
-
-        grayOutView.setMovementMethod(new ScrollingMovementMethod());
-        grayOutView = findViewById(R.id.additional_output_view);
-        buttonShelf = findViewById(R.id.button_shelf);
-        calculator = new Calculator();
-        compiler = new UserProgramCompiler();
-        outView = findViewById(R.id.main_output_view);
-        Button magicButton = findViewById(R.id.new_button);
-
-        View.OnClickListener clickHandler = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateButtonWindow window = new CreateButtonWindow();
-
-                Bundle args = new Bundle();
-
-                args.putString("Mode", "Create");
-
-                window.setArguments(args);
-
-                window.show(getFragmentManager(), "enterbuttonname");
-            }
-        };
-        magicButton.setOnClickListener(clickHandler);
-
-        ButtonsInit();
-
-    }
-
-    void ButtonsInit() {
+    private void ButtonsInit() {
         IFunction sinFunc = new IFunction() {
             @Override
             public double Calculate(double[] params) {
@@ -332,7 +276,9 @@ public class MainActivity extends AppCompatActivity
 
         IFunction atanFunc = new IFunction() {
             @Override
-            public double Calculate(double[] params) { return Math.atan(params[0]); }
+            public double Calculate(double[] params) {
+                return Math.atan(params[0]);
+            }
 
             @Override
             public int getNumberOfArgs() {
@@ -349,6 +295,96 @@ public class MainActivity extends AppCompatActivity
         functionsMap.put("atan", atanFunc);
     }
 
+    private void BooleanInit() {
+        isStarted = false;
+        isAnswered = false;
+        isError = false;
+        isContextMenu = false;
+        isScroll = false;
+        isGrayScroll = false;
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        myScroll = findViewById(R.id.scroll_main_out_view);
+        myGrayScroll = findViewById(R.id.scroll_add_out_view);
+
+        registerForContextMenu(findViewById(R.id.buttondot));
+        registerForContextMenu(findViewById(R.id.buttonsin));
+        registerForContextMenu(findViewById(R.id.buttoncos));
+        registerForContextMenu(findViewById(R.id.buttontan));
+
+        outView = findViewById(R.id.main_output_view);
+        grayOutView = findViewById(R.id.additional_output_view);
+
+        calculator = new Calculator();
+        compiler = new UserProgramCompiler();
+        outView = findViewById(R.id.main_output_view);
+        grayOutView = findViewById(R.id.additional_output_view);
+        Button magicButton = findViewById(R.id.new_button);
+        buttonShelf = findViewById(R.id.button_shelf);
+
+        ViewTreeObserver.OnScrollChangedListener scrollListener =
+                new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (isScroll) {
+                    myScroll.fullScroll(View.FOCUS_RIGHT);
+                    isScroll = false;
+                }
+                if (isGrayScroll){
+                    myGrayScroll.fullScroll(View.FOCUS_RIGHT);
+                    isGrayScroll = false;
+                }
+            }
+        };
+        myScroll.getViewTreeObserver().addOnScrollChangedListener(scrollListener);
+        myGrayScroll.getViewTreeObserver().addOnScrollChangedListener(scrollListener);
+
+        View.OnClickListener clickHandler = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CreateButtonWindow window = new CreateButtonWindow();
+
+                Bundle args = new Bundle();
+
+                args.putString("Mode", "Create");
+
+                window.setArguments(args);
+
+                window.show(getFragmentManager(), "enterbuttonname");
+            }
+        };
+        magicButton.setOnClickListener(clickHandler);
+
+        ButtonsInit();
+        BooleanInit();
+    }
+
+
+    @Override
+    public void onDialogPositiveClick(CreateButtonWindow dialog) {
+
+        switch(dialog.GetMode()) {
+            case "Edit":
+                ChangeButtonParams(dialog.GetName(), dialog.GetOldName(), dialog.GetBody(),
+                        dialog.GetParamNum());
+                break;
+            case "Create":
+                CreatingButton(dialog.GetName(), dialog.GetBody(), dialog.GetParamNum());
+                break;
+        }
+    }
+
+    @Override
+    public void onDialogNegativeClick(CreateButtonWindow dialog) {
+
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
         isContextMenu = true;
@@ -357,8 +393,9 @@ public class MainActivity extends AppCompatActivity
                 if (isAnswered) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("");
-                    myScroll.scrollTo(outView.getRight(), 0);
                     isAnswered = false;
                 } else if (!isError) {
                     char lastCh;
@@ -370,7 +407,8 @@ public class MainActivity extends AppCompatActivity
                             outView.append(",");
                             isStarted = false;
                         } else if (lastCh == '.') {
-                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                            outView.setText(outView.getText()
+                                    .subSequence(0, outView.getText().length() - 1));
                             outView.append(",");
                             isStarted = false;
                         }
@@ -381,9 +419,10 @@ public class MainActivity extends AppCompatActivity
                 if (isAnswered || isError) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("asin(");
                     ++nob;
-                    myScroll.scrollTo(outView.getRight(), 0);
                     if (isAnswered) {
                         isAnswered = false;
                     } else {
@@ -394,7 +433,8 @@ public class MainActivity extends AppCompatActivity
                     if (outView.getText().length() != 0) {
                         lastCh = outView.getText().charAt(outView.getText().length() - 1);
                         if (lastCh == '.') {
-                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                            outView.setText(outView.getText()
+                                    .subSequence(0, outView.getText().length() - 1));
                         }
                     }
                     isStarted = false;
@@ -406,9 +446,10 @@ public class MainActivity extends AppCompatActivity
                 if (isAnswered || isError) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("acos(");
                     ++nob;
-                    myScroll.scrollTo(outView.getRight(), 0);
                     if (isAnswered) {
                         isAnswered = false;
                     } else {
@@ -419,7 +460,8 @@ public class MainActivity extends AppCompatActivity
                     if (outView.getText().length() != 0) {
                         lastCh = outView.getText().charAt(outView.getText().length() - 1);
                         if (lastCh == '.') {
-                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                            outView.setText(outView.getText()
+                                    .subSequence(0, outView.getText().length() - 1));
                         }
                     }
                     isStarted = false;
@@ -431,9 +473,10 @@ public class MainActivity extends AppCompatActivity
                 if (isAnswered || isError) {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     outView.setText("atan(");
                     ++nob;
-                    myScroll.scrollTo(outView.getRight(), 0);
                     if (isAnswered) {
                         isAnswered = false;
                     } else {
@@ -444,7 +487,8 @@ public class MainActivity extends AppCompatActivity
                     if (outView.getText().length() != 0) {
                         lastCh = outView.getText().charAt(outView.getText().length() - 1);
                         if (lastCh == '.') {
-                            outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                            outView.setText(outView.getText()
+                                    .subSequence(0, outView.getText().length() - 1));
                         }
                     }
                     isStarted = false;
@@ -455,6 +499,9 @@ public class MainActivity extends AppCompatActivity
             default:
                 break;
         }
+        myScroll.scrollTo(outView.getRight(), 0);
+        myScroll.scrollBy(-1, 0);
+        isScroll = true;
     }
 
     @Override
@@ -467,9 +514,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.help:
-                Intent intent = new Intent(this, HelpActivity.class);
+                /*Intent intent = new Intent(this, HelpActivity.class);
                 startActivity(intent);
-                break;
+                break;*/
         }
         return super.onOptionsItemSelected(item);
     }
@@ -479,6 +526,8 @@ public class MainActivity extends AppCompatActivity
             if (v.getId() == R.id.buttonC) {
                 grayOutView.setText(outView.getText());
                 myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                myGrayScroll.scrollBy(-1, 0);
+                isGrayScroll = true;
             }
             else if (v.getId() == R.id.buttondelete) {
                 outView.setText("");
@@ -495,8 +544,9 @@ public class MainActivity extends AppCompatActivity
                     v.getId() == R.id.buttonln) {
                 grayOutView.setText(outView.getText());
                 myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                myGrayScroll.scrollBy(-1, 0);
+                isGrayScroll = true;
                 outView.setText("");
-                myScroll.scrollTo(outView.getRight(), 0);
             }
             isAnswered = false;
         }
@@ -504,8 +554,9 @@ public class MainActivity extends AppCompatActivity
         if (isError) {
             grayOutView.setText(outView.getText());
             myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+            myGrayScroll.scrollBy(-1, 0);
+            isGrayScroll = true;
             outView.setText("");
-            myScroll.scrollTo(outView.getRight(), 0);
             nob = 0;
             isError = false;
             isStarted = false;
@@ -513,7 +564,6 @@ public class MainActivity extends AppCompatActivity
 
         if (v.getId() == R.id.buttonC) {
             outView.setText("");
-            myScroll.scrollTo(outView.getRight(), 0);
             nob = 0;
             isStarted = false;
         }
@@ -568,10 +618,12 @@ public class MainActivity extends AppCompatActivity
                 --nob;
             }
         }
-        else if (v.getId() == R.id.button7 || v.getId() == R.id.button8 || v.getId() == R.id.button9 ||
-                v.getId() == R.id.button4 || v.getId() == R.id.button5 || v.getId() == R.id.button6 ||
-                v.getId() == R.id.button1 || v.getId() == R.id.button2 || v.getId() == R.id.button3 ||
-                v.getId() == R.id.buttonπ || v.getId() == R.id.buttonе || v.getId() == R.id.button0)
+        else if (v.getId() == R.id.button7 || v.getId() == R.id.button8 ||
+                v.getId() == R.id.button9 || v.getId() == R.id.button4 ||
+                v.getId() == R.id.button5 || v.getId() == R.id.button6 ||
+                v.getId() == R.id.button1 || v.getId() == R.id.button2 ||
+                v.getId() == R.id.button3 || v.getId() == R.id.buttonπ ||
+                v.getId() == R.id.buttonе || v.getId() == R.id.button0)
         {
             outView.setText((outView.getText().toString() + ((Button)v).getText().toString()));
         }
@@ -583,8 +635,12 @@ public class MainActivity extends AppCompatActivity
             if (outView.getText().length() != 0) {
                 isStarted = false;
                 lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                if (lastCh == '%' || lastCh == '/' || lastCh == '*' || lastCh == '+' || lastCh == '^' || lastCh == '-' || lastCh == '.' || lastCh == ',' && v.getId() != R.id.buttonsub){
-                    outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                if (lastCh == '%' || lastCh == '/' || lastCh == '*' || lastCh == '+' ||
+                        lastCh == '^' || lastCh == '-' || lastCh == '.' ||
+                        lastCh == ',' && v.getId() != R.id.buttonsub)
+                {
+                    outView.setText(outView.getText()
+                            .subSequence(0, outView.getText().length() - 1));
                 }
                 if (outView.getText().length() != 0) {
                     if (v.getId() != R.id.buttonpowy && v.getId() != R.id.buttonpow2) {
@@ -628,7 +684,8 @@ public class MainActivity extends AppCompatActivity
                 if (outView.getText().length() != 0) {
                     lastCh = outView.getText().charAt(outView.getText().length() - 1);
                     if (lastCh == '.') {
-                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                        outView.setText(outView.getText()
+                                .subSequence(0, outView.getText().length() - 1));
                     }
                 }
                 isStarted = false;
@@ -646,8 +703,12 @@ public class MainActivity extends AppCompatActivity
                 if (outView.getText().length() != 0) {
                     char lastCh;
                     lastCh = outView.getText().charAt(outView.getText().length() - 1);
-                    while (!(lastCh >= '0' && lastCh <= '9') && !(lastCh == '.') && !(lastCh >= 'a' && lastCh <= 'z') && !(lastCh == '_') && !(lastCh == ')') && !(lastCh == 'е') && !(lastCh == 'π')){
-                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
+                    while (!(lastCh >= '0' && lastCh <= '9') && !(lastCh == '.') &&
+                            !(lastCh >= 'a' && lastCh <= 'z') && !(lastCh == '_') &&
+                            !(lastCh == ')') && !(lastCh == 'е') && !(lastCh == 'π'))
+                    {
+                        outView.setText(outView.getText()
+                                .subSequence(0, outView.getText().length() - 1));
                         if (lastCh == '(') --nob;
                         if (outView.getText().length() != 0) {
                             lastCh = outView.getText().charAt(outView.getText().length() - 1);
@@ -658,43 +719,50 @@ public class MainActivity extends AppCompatActivity
                         --nob;
                     }
                     if (lastCh == '.') {
-                        outView.setText(outView.getText().subSequence(0, outView.getText().length() - 1));
-                        myScroll.scrollTo(outView.getRight(), 0);
+                        outView.setText(outView.getText()
+                                .subSequence(0, outView.getText().length() - 1));
                     }
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                     if (outView.getText().length() != 0) {
-                        result = calculator.calc(outView.getText().toString(), null, functionsMap);
-                        if (result - (int) result != 0.0 || !(result >= -32767.0 && result <= 32767.0)) {
+                        result = calculator
+                                .calc(outView.getText().toString(), null, functionsMap);
+                        if (result - (int) result != 0.0 ||
+                                !(result >= -32767.0 && result <= 32767.0))
+                        {
                             outView.setText(String.valueOf(result));
-                            myScroll.scrollTo(outView.getRight(), 0);
                         } else {
                             outView.setText(String.valueOf((int) result));
-                            myScroll.scrollTo(outView.getRight(), 0);
                         }
                     }
                 }
                 else {
                     grayOutView.setText(outView.getText());
                     myGrayScroll.scrollTo(grayOutView.getRight(), 0);
+                    myGrayScroll.scrollBy(-1, 0);
+                    isGrayScroll = true;
                 }
             }
             catch(Exception e) {
-                outView.setText("Ошибка: " + e.getMessage());
-                myScroll.scrollTo(outView.getRight(), 0);
+                outView.setText("Ошибка. ");
                 isError = true;
                 isAnswered = false;
             }
             catch (Error err) {
-                outView.setText("Ошибка: " + err.getMessage());
-                myScroll.scrollTo(outView.getRight(), 0);
+                outView.setText("Ошибка. ");
                 isError = true;
                 isAnswered = false;
             }
         }
+        myScroll.scrollTo(outView.getRight(), 0);
+        myScroll.scrollBy(-1, 0);
+        isScroll = true;
+
     }
 
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("numberOfBrackets", nob);
         outState.putInt("buttonCounter", buttonCounter);
@@ -702,6 +770,8 @@ public class MainActivity extends AppCompatActivity
         outState.putBoolean("isAnswered", isAnswered);
         outState.putBoolean("isError", isError);
         outState.putBoolean("isContextMenu", isContextMenu);
+        outState.putBoolean("isScroll", isScroll);
+        outState.putBoolean("isGrayScroll", isGrayScroll);
         outState.putSerializable("functionsMap", functionsMap);
         outState.putCharSequence("outView", outView.getText());
         outState.putCharSequence("grayOutView", grayOutView.getText());
@@ -717,7 +787,7 @@ public class MainActivity extends AppCompatActivity
         outState.putSerializable("buttons", buttons);
     }
 
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         nob = savedInstanceState.getInt("numberOfBrackets");
         buttonCounter = savedInstanceState.getInt("buttonCounter");
@@ -725,7 +795,10 @@ public class MainActivity extends AppCompatActivity
         isAnswered = savedInstanceState.getBoolean("isAnswered");
         isError = savedInstanceState.getBoolean("isError");
         isContextMenu = savedInstanceState.getBoolean("isContextMenu");
-        functionsMap = (HashMap<String, IFunction>) savedInstanceState.getSerializable("functionsMap");
+        isScroll = savedInstanceState.getBoolean("isScroll");
+        isGrayScroll = savedInstanceState.getBoolean("isGrayScroll");
+        functionsMap = (HashMap<String, IFunction>) savedInstanceState
+                .getSerializable("functionsMap");
         outView.setText(savedInstanceState.getCharSequence("outView"));
         grayOutView.setText(savedInstanceState.getCharSequence("grayOutView"));
         ArrayList<Button> buttons = (ArrayList<Button>) savedInstanceState.getSerializable("buttons");
@@ -734,7 +807,8 @@ public class MainActivity extends AppCompatActivity
         for (int i = buttons.size() - 1; i >= 0; --i) {
             tmpButton = buttons.get(i);
             buttonShelf.addView(tmpButton);
-            buttonShelf.getChildAt(buttons.size() - i).setOnClickListener(functionButtonClickListener);
+            buttonShelf.getChildAt(buttons.size() - i)
+                    .setOnClickListener(functionButtonClickListener);
         }
     }
 }

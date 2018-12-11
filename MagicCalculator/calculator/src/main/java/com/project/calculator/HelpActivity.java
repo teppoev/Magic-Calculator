@@ -2,7 +2,6 @@ package com.project.calculator;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.widget.TabHost;
 
 public class HelpActivity extends AppCompatActivity {
